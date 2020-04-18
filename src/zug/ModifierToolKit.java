@@ -4,13 +4,13 @@ import java.util.ArrayList;
 
 public class ModifierToolKit {
 	private Modifiers modifier;
-	Game game;
-	Player p1;
-	Player p2;
-	ArrayList<Pawn> senders;
-	ArrayList<Pawn> receivers;
-	Cardinal orientation;
-	
+	private Game game;
+	private Player p1;
+	private Player p2;
+	private ArrayList<Pawn> senders;
+	private ArrayList<Pawn> receivers;
+	private Cardinal orientation;
+
 	ModifierToolKit(Modifiers m, Game g, Player p1, Player p2, ArrayList<Pawn> s, ArrayList<Pawn> r, Cardinal o) {
 		modifier = m;
 		game = g;

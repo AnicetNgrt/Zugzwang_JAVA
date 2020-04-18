@@ -1,104 +1,69 @@
 package zug;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 
 public class Card {
-	private Types type;
+	private CardTypes type;
 	private ArrayList<Action> actions;
 	private Player owner;
 	private Cardinal orientation;
 	private boolean shown;
-	
-	Card(Types type, ArrayList<Action> actions, Cardinal orientation, boolean shown) {
-		this.type = type; this.actions = actions;
+	private int playedTurn;
+	private int playedGame;
+
+	Card(CardTypes type, ArrayList<Action> actions, Cardinal orientation) {
+		this.type = type;
+		this.actions = actions;
 		this.orientation = orientation;
-		this.shown = shown;
+		this.shown = type.shown();
+		playedGame = 0;
+		playedTurn = 0;
 	}
-	
-	Types type() {
+
+	CardTypes type() {
 		return type;
 	}
-	
+
 	void rotate(Cardinal orientation) {
 		this.orientation = orientation;
 	}
-	
+
 	void setOwner(Player p) {
 		owner = p;
 	}
-	
+
 	void reveal() {
 		shown = true;
 	}
-	
+
 	boolean shown() {
 		return shown;
 	}
-	
-	ArrayList<Action> actions() {
-		return new ArrayList<Action>(actions);
+
+	int playedTurn() {
+		return playedTurn;
 	}
-	
+
+	int playedGame() {
+		return playedGame;
+	}
+
+	ArrayList<Action> actions() {
+		return new ArrayList<>(actions);
+	}
+
 	ActionEndReason play(int i, Game g, Player target, ArrayList<Pawn> senders, ArrayList<Pawn> receivers) {
-		if(i < 0 || i >= actions.size()) return ActionEndReason.INDEX_OUT_OF_RANGE;
+		if (i < 0 || i >= actions.size()) return ActionEndReason.INDEX_OUT_OF_RANGE;
 		Action action = actions.get(i);
-		if(owner.ap() < action.cost()) return ActionEndReason.TOO_EXPENSIVE;
-		if(action.playedTurn() >= action.maxTurn()) return ActionEndReason.MAX_TURN;
-		if(action.playedGame() >= action.maxGame()) return ActionEndReason.MAX_GAME;
-		return action.play(g, owner, target, senders, receivers, orientation);
+		if (owner.ap() < action.cost()) return ActionEndReason.TOO_EXPENSIVE;
+		if (playedTurn >= type.maxTurn()) return ActionEndReason.MAX_TURN;
+		if (playedGame >= type.maxGame()) return ActionEndReason.MAX_GAME;
+		ActionEndReason aer = action.play(g, owner, target, senders, receivers, orientation);
+		if (aer == ActionEndReason.SUCCESS) shown = true;
+		return aer;
 	}
 	
 	void turnReset() {
-		for(Action a:actions)
-			a.turnReset();
-	}
-	
-	enum Types {
-		PETITS_RUISSEAUX("Petits Ruisseaux",
-				0,
-				true,
-				true,
-				new Action(Modifiers.M1, 1, 999, 999)),
-		CAVALIER("Cavalier",
-				8,
-				false,
-				true,
-				new Action(Modifiers.MCavLeft, 1, 999, 999),
-				new Action(Modifiers.MCavRight, 1, 999, 999));
-		
-		private String name;
-		private Action[] actions;
-		private int weight;
-		private boolean oriented;
-		private boolean shown;
-		
-		Types(String name, int weight, boolean oriented, boolean shown, Action... actions) {
-			this.name = name;
-			this.weight = weight;
-			this.oriented = oriented;
-			this.shown = shown;
-			this.actions = actions;
-		}
-		
-		int weight() {
-			return weight;
-		}
-		
-		boolean oriented() {
-			return oriented;
-		}
-		
-		String trueName() {
-			return name;
-		}
-		
-		Card getOne(Cardinal orientation) {
-			ArrayList<Action> cardActions = new ArrayList<Action>();
-			for(Action a:actions) {
-				cardActions.add(new Action(a));
-			}
-			return new Card(this, cardActions, orientation, shown);
-		}
+		playedTurn = 0;
 	}
 }
