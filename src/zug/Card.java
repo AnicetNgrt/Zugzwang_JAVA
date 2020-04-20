@@ -5,19 +5,27 @@ import java.util.ArrayList;
 public class Card {
 	private CardTypes type;
 	private ArrayList<Action> actions;
-	private Player owner;
 	private Cardinal orientation;
+	private Player owner;
 	private boolean shown;
 	private int playedTurn;
 	private int playedGame;
 
-	Card(CardTypes type, ArrayList<Action> actions, Cardinal orientation) {
+	Card(CardTypes type, Player owner, ArrayList<Action> actions, Cardinal orientation) {
 		this.type = type;
 		this.actions = actions;
+		this.owner = owner;
 		this.orientation = orientation;
 		this.shown = type.shown();
 		playedGame = 0;
 		playedTurn = 0;
+	}
+
+	Card(Card c, Player ownerCopy) {
+		this(c.type, ownerCopy, c.actions, c.orientation);
+		playedGame = c.playedGame;
+		playedTurn = c.playedTurn;
+		shown = c.shown;
 	}
 
 	CardTypes type() {
@@ -26,10 +34,6 @@ public class Card {
 
 	void rotate(Cardinal orientation) {
 		this.orientation = orientation;
-	}
-
-	void setOwner(Player p) {
-		owner = p;
 	}
 
 	void reveal() {
@@ -52,15 +56,39 @@ public class Card {
 		return new ArrayList<>(actions);
 	}
 
-	ActionEndReason play(int i, Game g, Player target, ArrayList<Pawn> senders, ArrayList<Pawn> receivers) {
-		if (i < 0 || i >= actions.size()) return ActionEndReason.INDEX_OUT_OF_RANGE;
+
+	ModifierConclusion play(int i, Game g, ArrayList<Integer> targetsI, ArrayList<ArrayList<Integer>> pawnsI) {
+
+		String cclStr = "Player " + owner.name() + " attempts action index " + i + " on card type " + type.name();
+		if (i < 0 || i >= actions.size()) {
+			ActionEndReason er = ActionEndReason.INDEX_OUT_OF_RANGE;
+			return new ModifierConclusion(er, cclStr + " FAILS " + er.name(), g, g);
+		}
+
+		cclStr = "Player " + owner.name() + " attempts action " + actions.get(i).modifier().name() + " on card type " + type.name();
 		Action action = actions.get(i);
-		if (owner.ap() < action.cost()) return ActionEndReason.TOO_EXPENSIVE;
-		if (playedTurn >= type.maxTurn()) return ActionEndReason.MAX_TURN;
-		if (playedGame >= type.maxGame()) return ActionEndReason.MAX_GAME;
-		ActionEndReason aer = action.play(g, owner, target, senders, receivers, orientation);
-		if (aer == ActionEndReason.SUCCESS) shown = true;
-		return aer;
+		if (owner.ap() < action.cost()) {
+			ActionEndReason er = ActionEndReason.TOO_EXPENSIVE;
+			return new ModifierConclusion(er, cclStr + " FAILS " + er.name(), g, g);
+		}
+		if (playedTurn >= type.maxTurn()) {
+			ActionEndReason er = ActionEndReason.MAX_TURN;
+			return new ModifierConclusion(er, cclStr + " FAILS " + er.name(), g, g);
+		}
+		if (playedGame >= type.maxGame()) {
+			ActionEndReason er = ActionEndReason.MAX_GAME;
+			return new ModifierConclusion(er, cclStr + " FAILS " + er.name(), g, g);
+		}
+
+		ArrayList<Integer> playersI = new ArrayList<>();
+		playersI.add(g.indexOfPlayer(owner));
+		for (int pi : targetsI) {
+			playersI.add(pi);
+		}
+
+		ModifierConclusion mc = action.play(g, playersI, pawnsI, orientation);
+		if (mc.endReason == ActionEndReason.SUCCESS) reveal();
+		return mc;
 	}
 	
 	void turnReset() {

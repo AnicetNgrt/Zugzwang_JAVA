@@ -5,22 +5,28 @@ public class Pawn {
 	private Player owner;
 	private boolean exiled;
 	private boolean alive;
-	
-	Pawn(Coor2d c) {
+
+	Pawn(Coor2d c, Player owner) {
 		this.coor = c;
-		this.setOwner(null);
+		this.setOwner(owner);
 		this.setExiled(false);
 		alive = true;
+	}
+
+	Pawn(Pawn pa, Player ownerCopy) {
+		this(pa.coor, ownerCopy);
+		exiled = pa.exiled;
+		alive = pa.alive;
 	}
 
 	void moveTo(Coor2d c) {
 		coor = c;
 	}
-	
+
 	Coor2d coor() {
 		return coor;
 	}
-	
+
 	Player getOwner() {
 		return owner;
 	}

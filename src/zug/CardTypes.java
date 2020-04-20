@@ -82,11 +82,11 @@ public enum CardTypes {
         return shown;
     }
 
-    Card getOne(Cardinal orientation) {
+    Card getOne(Cardinal orientation, Player owner) {
         ArrayList<Action> cardActions = new ArrayList<>();
         for (Action a : actions) {
             cardActions.add(new Action(a));
         }
-        return new Card(this, cardActions, orientation);
+        return new Card(this, owner, cardActions, orientation);
     }
 }

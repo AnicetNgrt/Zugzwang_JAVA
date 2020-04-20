@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class Game {
 
-	private final int MAX_CLOCK = 99999;
+	private final int MAX_CLOCK = 99;
 	private Rules rules;
 	private ArrayList<Player> players;
 	private ArrayList<ModifierToolKit>[] planned;
@@ -12,14 +12,32 @@ public class Game {
 	private Board board;
 	private int clock;
 
+	Game(ArrayList<Player> players, Rules rules, Board board) {
+		clock = 0;
+		planned = new ArrayList[MAX_CLOCK];
+		for (int i = 0; i < MAX_CLOCK; i++) {
+			planned[i] = new ArrayList<>();
+		}
+		triggers = new ArrayList<>();
+		this.board = board;
+		this.rules = rules;
+	}
+
+	Game(Game g) {
+		this(new ArrayList<>(), g.rules, new Board(g.board));
+		for (Player p : g.players) {
+			players.add(new Player(p));
+		}
+	}
+
 	Rules rules() {
 		return rules;
 	}
-	
+
 	int clock() {
 		return clock;
 	}
-	
+
 	int clockNextTurn() {
 		return (clock + 8) - ((clock + 8) % 4);
 	}
@@ -68,8 +86,7 @@ public class Game {
 		return players.get(pI);
 	}
 
-	public Game copy() {
-		Game copy = new Game();
-		return copy;
+	public int indexOfPlayer(Player p) {
+		return players.indexOf(p);
 	}
 }

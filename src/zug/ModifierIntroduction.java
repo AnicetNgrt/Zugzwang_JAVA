@@ -24,7 +24,7 @@ class ModifierIntroduction {
         this.pawnsI = pawnsI;
         coherent = true;
         before = g;
-        after = g.copy();
+        after = new Game(g);
         players = new ArrayList<>();
         for (int i : playersI) {
             players.add(after.getPlayer(i));

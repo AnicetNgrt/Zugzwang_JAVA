@@ -32,6 +32,10 @@ public class Action {
 		return ccl;
 	}
 
+	Modifiers modifier() {
+		return modifier;
+	}
+
 	public String toString() {
 		return "";
 	}

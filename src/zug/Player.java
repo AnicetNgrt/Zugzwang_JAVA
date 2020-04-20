@@ -1,17 +1,38 @@
 package zug;
 
-import exceptions.HeavyHandException;
-
 import java.util.ArrayList;
 
 public class Player {
 	private String name;
 	private ArrayList<Pawn> pawns;
 	private ArrayList<Card> hand;
-	private Game game;
 	private boolean isPacman;
 	private boolean isBowBandaged;
 	private int ap;
+	private Rules rules;
+
+	Player(String name, Rules rules) {
+		this.name = name;
+		pawns = new ArrayList<>();
+		hand = new ArrayList<>();
+		isPacman = true;
+		isBowBandaged = false;
+		this.rules = rules;
+		ap = rules.maxAp();
+	}
+
+	Player(Player p) {
+		this(p.name, p.rules);
+		ap = p.ap;
+		for (Pawn pa : p.pawns) {
+			addPawn(new Pawn(pa, this));
+		}
+		for (Card ca : p.hand) {
+			addCard(new Card(ca, this));
+		}
+		isPacman = p.isPacman;
+		isBowBandaged = p.isBowBandaged;
+	}
 
 	void addPawn(Pawn p) {
 		pawns.add(p);
@@ -19,13 +40,13 @@ public class Player {
 
 	int handWeight() {
 		int w = 0;
-		for(Card c:hand)
+		for (Card c : hand)
 			w += c.type().weight();
 		return w;
 	}
-	
-	void addCard(Card c) throws HeavyHandException {
-		if(handWeight() + c.type().weight() > game.rules().maxWeight()) throw new HeavyHandException();
+
+	void addCard(Card c) {
+		if (handWeight() + c.type().weight() > rules.maxWeight()) return;
 		hand.add(c);
 	}
 
