@@ -1,4 +1,7 @@
-package zug;
+package zug.classes;
+
+import utils.JsonUtils;
+import zug.jsonClasses.JsonPlayer;
 
 import java.util.ArrayList;
 
@@ -34,6 +37,24 @@ public class Player {
 		isBowBandaged = p.isBowBandaged;
 	}
 
+	public static Player fromJson(String jsonPath) {
+		JsonUtils<JsonPlayer> jUtils = new JsonUtils<>(JsonPlayer.class);
+		JsonPlayer pj = jUtils.readJson(jsonPath);
+
+		Player p = new Player(pj.name, Rules.fromJson(pj.rulesPath));
+		for (String path : pj.pawnsPaths)
+			p.pawns.add(Pawn.fromJson(path, p));
+
+		for (String path : pj.handPaths)
+			p.hand.add(Card.fromJson(path, p));
+
+		p.isPacman = pj.isPacman;
+		p.isBowBandaged = pj.isBowBandaged;
+		p.ap = pj.ap;
+
+		return p;
+	}
+
 	void addPawn(Pawn p) {
 		pawns.add(p);
 	}
@@ -66,11 +87,11 @@ public class Player {
 		this.isPacman = isPacman;
 	}
 
-	boolean isBowBandaged() {
+	public boolean isBowBandaged() {
 		return isBowBandaged;
 	}
 
-	void setBowBandaged(boolean isBowBandaged) {
+	public void setBowBandaged(boolean isBowBandaged) {
 		this.isBowBandaged = isBowBandaged;
 	}
 

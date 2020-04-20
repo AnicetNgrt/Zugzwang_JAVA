@@ -1,4 +1,8 @@
-package zug;
+package zug.classes;
+
+import utils.JsonUtils;
+import zug.enums.ActionEndReason;
+import zug.jsonClasses.JsonPawn;
 
 public class Pawn {
 	private Coor2d coor;
@@ -17,6 +21,16 @@ public class Pawn {
 		this(pa.coor, ownerCopy);
 		exiled = pa.exiled;
 		alive = pa.alive;
+	}
+
+	public static Pawn fromJson(String jsonPath, Player owner) {
+		JsonUtils<JsonPawn> jUtils = new JsonUtils<>(JsonPawn.class);
+		JsonPawn paj = jUtils.readJson(jsonPath);
+
+		Pawn pa = new Pawn(new Coor2d(paj.x, paj.y), owner);
+		pa.exiled = paj.exiled;
+		pa.alive = paj.alive;
+		return pa;
 	}
 
 	void moveTo(Coor2d c) {

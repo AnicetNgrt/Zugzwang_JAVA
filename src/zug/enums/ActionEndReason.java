@@ -1,4 +1,4 @@
-package zug;
+package zug.enums;
 
 public enum ActionEndReason {
 	SUCCESS, INCOHERENT, INDEX_OUT_OF_RANGE, TOO_EXPENSIVE, MAX_TURN,

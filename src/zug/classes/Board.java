@@ -1,4 +1,4 @@
-package zug;
+package zug.classes;
 
 import java.util.ArrayList;
 
@@ -82,6 +82,10 @@ public class Board {
         }
     }
 
+    public static Board fromTxt(String boardPath) {
+        return null;
+    }
+
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     boolean isIn(Coor2d c) {
         return c.inShape(new Coor2d(0, 0), maxCoor());
@@ -119,11 +123,15 @@ public class Board {
         return c.x() == 0 || c.y() == 0 || c.x() == maxCoor().x() || c.y() == maxCoor().y();
     }
 
+    boolean isMiddle(Coor2d c) {
+        return middles.contains(c);
+    }
+
     Coor2d maxCoor() {
         return this.size.maxCoor;
     }
 
-    enum Sizes {
+    public enum Sizes {
         SMALL(new Coor2d(7, 10)),
         STANDARD(new Coor2d(9, 14)),
         EXTENDED(new Coor2d(19, 29));
@@ -131,8 +139,8 @@ public class Board {
         private Coor2d maxCoor;
 
         Sizes(Coor2d maxCoor) {
-			this.maxCoor = maxCoor;
-		}
+            this.maxCoor = maxCoor;
+        }
 
 		Coor2d maxCoor() {
 			return maxCoor;

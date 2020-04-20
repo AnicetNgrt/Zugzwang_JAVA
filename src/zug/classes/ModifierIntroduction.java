@@ -1,30 +1,32 @@
-package zug;
+package zug.classes;
+
+import zug.enums.ActionEndReason;
 
 import java.util.ArrayList;
 
-class ModifierIntroduction {
-    Game before;
-    Game after;
-    ArrayList<Player> players;
-    ArrayList<ArrayList<Pawn>> pawns;
-    ArrayList<Integer> playersI;
-    ArrayList<ArrayList<Integer>> pawnsI;
-    boolean coherent;
+public class ModifierIntroduction {
+    public GameState before;
+    public GameState after;
+    public ArrayList<Player> players;
+    public ArrayList<ArrayList<Pawn>> pawns;
+    public ArrayList<Integer> playersI;
+    public ArrayList<ArrayList<Integer>> pawnsI;
+    public boolean coherent;
 
     //shortcuts
-    Player p1;
-    Player p2;
-    Pawn fpp1;
-    Pawn fpp2;
-    Board b;
+    public Player p1;
+    public Player p2;
+    public Pawn fpp1;
+    public Pawn fpp2;
+    public Board b;
     private ActionEndReason er;
 
-    ModifierIntroduction(Game g, ArrayList<Integer> playersI, ArrayList<ArrayList<Integer>> pawnsI) {
+    public ModifierIntroduction(GameState g, ArrayList<Integer> playersI, ArrayList<ArrayList<Integer>> pawnsI) {
         this.playersI = playersI;
         this.pawnsI = pawnsI;
         coherent = true;
         before = g;
-        after = new Game(g);
+        after = new GameState(g);
         players = new ArrayList<>();
         for (int i : playersI) {
             players.add(after.getPlayer(i));
@@ -58,11 +60,11 @@ class ModifierIntroduction {
         return er;
     }
 
-    void setEr(ActionEndReason re) {
+    public void setEr(ActionEndReason re) {
         if (er == ActionEndReason.SUCCESS) er = re;
     }
 
-    ModifierConclusion finish(String cclStr) {
+    public ModifierConclusion finish(String cclStr) {
         if (er != ActionEndReason.SUCCESS) {
             cclStr += " FAILS : " + er.name();
         } else {

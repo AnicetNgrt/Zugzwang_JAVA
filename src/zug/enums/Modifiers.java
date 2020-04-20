@@ -1,8 +1,11 @@
-package zug;
+package zug.enums;
+
+import zug.classes.*;
+import zug.interfaces.ModifExpr;
 
 import java.util.ArrayList;
 
-enum Modifiers {
+public enum Modifiers {
 	//-----------------------------------------------------------------------------------------------------------
 	M1((ModifierIntroduction mi, Cardinal orientation) -> {
 		return ModifiersUtils.movePawn(mi, orientation, orientation);
@@ -41,8 +44,11 @@ enum Modifiers {
 	}),
 	//-----------------------------------------------------------------------------------------------------------
 	Bow((ModifierIntroduction mi, Cardinal orientation) -> {
+		if (!mi.p1.isBowBandaged()) mi.setEr(ActionEndReason.BOW_UNBANDAGED);
+
 		ModifierConclusion mc = ModifiersUtils.binaryAttack(mi, 2, "bow");
-		ModifierToolKit unbandaging = new ModifierToolKit(Unbandage, mi.after, mi.playersI, null, null);
+
+		ModifierToolKit unbandaging = new ModifierToolKit(Unbandage, mi.playersI, null, null);
 		mi.after.tryRemovePlannedUntil(unbandaging, mi.after.clockNextTurn() + 4);
 		mi.after.addPlanned(unbandaging, mi.after.clockNextTurn() + 4);
 		return mc;
@@ -54,7 +60,7 @@ enum Modifiers {
 		this.expr = expr;
 	}
 
-	ModifierConclusion execute(Game g, ArrayList<Integer> playersI, ArrayList<ArrayList<Integer>> pawnsI, Cardinal orientation) {
+	public ModifierConclusion execute(GameState g, ArrayList<Integer> playersI, ArrayList<ArrayList<Integer>> pawnsI, Cardinal orientation) {
 		ModifierIntroduction mi = new ModifierIntroduction(g, playersI, pawnsI);
 		if (!mi.coherent) return new ModifierConclusion(ActionEndReason.INCOHERENT, "Incoherent data was given.", g, g);
 		return expr.execute(mi, orientation);

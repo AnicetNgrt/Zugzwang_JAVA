@@ -1,23 +1,25 @@
-package zug;
+package zug.enums;
+
+import zug.classes.Coor2d;
 
 public enum Cardinal {
-	NORTH(0, new Coor2d(0, 1)),EAST(1, new Coor2d(1, 0)),SOUTH(2, new Coor2d(0, -1)),WEST(3, new Coor2d(-1, 0));
-	
+	NORTH(0, new Coor2d(0, 1)), EAST(1, new Coor2d(1, 0)), SOUTH(2, new Coor2d(0, -1)), WEST(3, new Coor2d(-1, 0));
+
 	private int i;
 	private Coor2d vector;
-	
+
 	Cardinal(int i, Coor2d vector) {
 		this.i = i;
 		this.vector = vector;
 	}
-	
-	Coor2d vector() {
+
+	public Coor2d vector() {
 		return vector;
 	}
-	
-	Cardinal[] rotate(Cardinal... from) {
+
+	public Cardinal[] rotate(Cardinal... from) {
 		Cardinal[] res = new Cardinal[from.length];
-		if(from.length == 0) {
+		if (from.length == 0) {
 			return from;
 		} else if (from.length > 1) {
 			int i = 0;

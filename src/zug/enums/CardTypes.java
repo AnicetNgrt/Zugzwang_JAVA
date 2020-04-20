@@ -1,4 +1,8 @@
-package zug;
+package zug.enums;
+
+import zug.classes.Action;
+import zug.classes.Card;
+import zug.classes.Player;
 
 import java.util.ArrayList;
 
@@ -58,7 +62,7 @@ public enum CardTypes {
         this.actions = actions;
     }
 
-    int weight() {
+    public int weight() {
         return weight;
     }
 
@@ -70,15 +74,15 @@ public enum CardTypes {
         return name;
     }
 
-    int maxTurn() {
+    public int maxTurn() {
         return maxTurn;
     }
 
-    int maxGame() {
+    public int maxGame() {
         return maxGame;
     }
 
-    boolean shown() {
+    public boolean shown() {
         return shown;
     }
 
