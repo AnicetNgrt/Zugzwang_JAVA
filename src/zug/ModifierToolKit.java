@@ -5,23 +5,19 @@ import java.util.ArrayList;
 public class ModifierToolKit {
 	private Modifiers modifier;
 	private Game game;
-	private Player p1;
-	private Player p2;
-	private ArrayList<Pawn> senders;
-	private ArrayList<Pawn> receivers;
+	private ArrayList<Integer> playersI;
+	private ArrayList<ArrayList<Integer>> pawnsI;
 	private Cardinal orientation;
 
-	ModifierToolKit(Modifiers m, Game g, Player p1, Player p2, ArrayList<Pawn> s, ArrayList<Pawn> r, Cardinal o) {
+	ModifierToolKit(Modifiers m, Game g, ArrayList<Integer> playersI, ArrayList<ArrayList<Integer>> pawnsI, Cardinal o) {
 		modifier = m;
 		game = g;
-		this.p1 = p1;
-		this.p2 = p2;
-		senders = s;
-		receivers = r;
+		this.playersI = playersI;
+		this.pawnsI = pawnsI;
 		orientation = o;
 	}
-	
-	ActionEndReason execute() {
-		return modifier.execute(game, p1, p2, senders, receivers, orientation);
+
+	ModifierConclusion execute() {
+		return modifier.execute(game, playersI, pawnsI, orientation);
 	}
 }

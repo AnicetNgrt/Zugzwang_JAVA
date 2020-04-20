@@ -19,18 +19,20 @@ public class Action {
 		return cost;
 	}
 
-	ActionEndReason play(Game g, Player p1, Player p2, ArrayList<Pawn> senders, ArrayList<Pawn> receivers, Cardinal orientation) {
-		ActionEndReason review = modifier.execute(g, p1, p2, senders, receivers, orientation);
-		if (review == ActionEndReason.SUCCESS) {
-			p1.pay(cost);
-			g.addToClock(cost);
+	ModifierConclusion simulate(Game g, ArrayList<Integer> playersI, ArrayList<ArrayList<Integer>> pawnsI, Cardinal orientation) {
+		return modifier.execute(g, playersI, pawnsI, orientation);
+	}
+
+	ModifierConclusion play(Game g, ArrayList<Integer> playersI, ArrayList<ArrayList<Integer>> pawnsI, Cardinal orientation) {
+		ModifierConclusion ccl = simulate(g, playersI, pawnsI, orientation);
+		if (ccl.endReason == ActionEndReason.SUCCESS) {
+			ccl.after.getPlayer(playersI.get(0)).pay(cost);
+			ccl.after.addToClock(cost);
 		}
-		return review;
+		return ccl;
 	}
 
 	public String toString() {
-		@SuppressWarnings("StringBufferReplaceableByString") StringBuilder sb = new StringBuilder();
-		sb.append(" ");
-		return sb.toString();
+		return "";
 	}
 }

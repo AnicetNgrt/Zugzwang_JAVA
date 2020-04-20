@@ -7,7 +7,10 @@ class ModifierIntroduction {
     Game after;
     ArrayList<Player> players;
     ArrayList<ArrayList<Pawn>> pawns;
+    ArrayList<Integer> playersI;
+    ArrayList<ArrayList<Integer>> pawnsI;
     boolean coherent;
+
     //shortcuts
     Player p1;
     Player p2;
@@ -17,6 +20,8 @@ class ModifierIntroduction {
     private ActionEndReason er;
 
     ModifierIntroduction(Game g, ArrayList<Integer> playersI, ArrayList<ArrayList<Integer>> pawnsI) {
+        this.playersI = playersI;
+        this.pawnsI = pawnsI;
         coherent = true;
         before = g;
         after = g.copy();

@@ -42,7 +42,7 @@ enum Modifiers {
 	//-----------------------------------------------------------------------------------------------------------
 	Bow((ModifierIntroduction mi, Cardinal orientation) -> {
 		ModifierConclusion mc = ModifiersUtils.binaryAttack(mi, 2, "bow");
-		ModifierToolKit unbandaging = new ModifierToolKit(Unbandage, mi.after, mi.p1, null, null, null, null);
+		ModifierToolKit unbandaging = new ModifierToolKit(Unbandage, mi.after, mi.playersI, null, null);
 		mi.after.tryRemovePlannedUntil(unbandaging, mi.after.clockNextTurn() + 4);
 		mi.after.addPlanned(unbandaging, mi.after.clockNextTurn() + 4);
 		return mc;

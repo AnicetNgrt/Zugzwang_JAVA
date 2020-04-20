@@ -2,20 +2,21 @@ package zug;
 
 import java.util.ArrayList;
 
-public abstract class TriggeredModifier extends ModifierToolKit{
+public abstract class TriggeredModifier extends ModifierToolKit {
 
-	TriggeredModifier(Modifiers m, Game g, Player p1, Player p2, ArrayList<Pawn> s, ArrayList<Pawn> r, Cardinal o) {
-		super(m, g, p1, p2, s, r, o);
+	TriggeredModifier(Modifiers m, Game g, ArrayList<Integer> playersI, ArrayList<ArrayList<Integer>> pawnsI, Cardinal o) {
+		super(m, g, playersI, pawnsI, o);
 	}
-	
+
 	abstract boolean isTriggered();
-	abstract ActionEndReason execute();
+
+	abstract ModifierConclusion execute();
 }
 
 class MimicTriggerModifier extends TriggeredModifier {
 
-	MimicTriggerModifier(Modifiers m, Game g, Player p1, Player p2, ArrayList<Pawn> s, ArrayList<Pawn> r, Cardinal o) {
-		super(m, g, p1, p2, s, r, o);
+	MimicTriggerModifier(Modifiers m, Game g, ArrayList<Integer> playersI, ArrayList<ArrayList<Integer>> pawnsI, Cardinal o) {
+		super(m, g, playersI, pawnsI, o);
 	}
 
 	boolean isTriggered() {
@@ -23,7 +24,7 @@ class MimicTriggerModifier extends TriggeredModifier {
 	}
 
 	@Override
-	ActionEndReason execute() {
+	ModifierConclusion execute() {
 		return null;
 	}
 	
