@@ -2,90 +2,61 @@ package zug;
 
 import java.util.ArrayList;
 
-interface ModifExpr {
-	ActionEndReason execute(Game g, Player p1, Player p2, ArrayList<Pawn> senders, ArrayList<Pawn> receivers, Cardinal orientation);
-}
-
-class ModifiersUtils {
-	static ActionEndReason movePawn(Game g, ArrayList<Pawn> receivers, Cardinal orientation, Cardinal... pattern) {
-		Cardinal[] truePattern = orientation.rotate(pattern);
-		Pawn receiver = (Pawn) receivers.toArray()[0];
-		Coor2d pos = receiver.coor();
-		Board b = g.board();
-		Player owner = receiver.getOwner();
-		for(Cardinal c:truePattern) {
-			pos = pos.add(c.vector());
-			if((!b.isIn(pos) || (b.isBorder(pos) && !b.isCorner(pos))) && !owner.isPacman()) return ActionEndReason.NOT_PACMAN;
-			if(!b.isIn(pos)) pos = b.pacmanCoor(pos);
-		}
-		if(b.isRestricted(pos)) pos = b.shift(pos);
-		if(b.isObstructed(pos)) return ActionEndReason.OBSTRUCTED;
-		b.setObstructed(receiver.coor(), false);
-		b.setObstructed(pos, true);
-		receiver.moveTo(pos);
-		return ActionEndReason.SUCCESS;
-	}
-}
-
-public enum Modifiers {
+enum Modifiers {
 	//-----------------------------------------------------------------------------------------------------------
-	M1((Game g, Player p1, Player p2, ArrayList<Pawn> senders, ArrayList<Pawn> receivers, Cardinal orientation) -> {
-		return ModifiersUtils.movePawn(g, receivers, orientation, orientation);
+	M1((ModifierIntroduction mi, Cardinal orientation) -> {
+		return ModifiersUtils.movePawn(mi, orientation, orientation);
 	}),
 	//-----------------------------------------------------------------------------------------------------------
-	MCavRight((Game g, Player p1, Player p2, ArrayList<Pawn> senders, ArrayList<Pawn> receivers, Cardinal orientation) -> {
-		return ModifiersUtils.movePawn(g, receivers, orientation, Cardinal.NORTH, Cardinal.NORTH, Cardinal.EAST);
+	MCavRight((ModifierIntroduction mi, Cardinal orientation) -> {
+		return ModifiersUtils.movePawn(mi, orientation, Cardinal.NORTH, Cardinal.NORTH, Cardinal.EAST);
 	}),
 	//-----------------------------------------------------------------------------------------------------------
-	MCavLeft((Game g, Player p1, Player p2, ArrayList<Pawn> senders, ArrayList<Pawn> receivers, Cardinal orientation) -> {
-		return ModifiersUtils.movePawn(g, receivers, orientation, Cardinal.NORTH, Cardinal.NORTH, Cardinal.WEST);
+	MCavLeft((ModifierIntroduction mi, Cardinal orientation) -> {
+		return ModifiersUtils.movePawn(mi, orientation, Cardinal.NORTH, Cardinal.NORTH, Cardinal.WEST);
 	}),
 	//-----------------------------------------------------------------------------------------------------------
-	MClockLeft((Game g, Player p1, Player p2, ArrayList<Pawn> senders, ArrayList<Pawn> receivers, Cardinal orientation) -> {
-		return ModifiersUtils.movePawn(g, receivers, orientation, Cardinal.NORTH, Cardinal.NORTH, Cardinal.NORTH, Cardinal.WEST);
+	MClockLeft((ModifierIntroduction mi, Cardinal orientation) -> {
+		return ModifiersUtils.movePawn(mi, orientation, Cardinal.NORTH, Cardinal.NORTH, Cardinal.NORTH, Cardinal.WEST);
 	}),
 	//-----------------------------------------------------------------------------------------------------------
-	MClockRight((Game g, Player p1, Player p2, ArrayList<Pawn> senders, ArrayList<Pawn> receivers, Cardinal orientation) -> {
-		return ModifiersUtils.movePawn(g, receivers, orientation, Cardinal.NORTH, Cardinal.NORTH, Cardinal.NORTH, Cardinal.EAST);
+	MClockRight((ModifierIntroduction mi, Cardinal orientation) -> {
+		return ModifiersUtils.movePawn(mi, orientation, Cardinal.NORTH, Cardinal.NORTH, Cardinal.NORTH, Cardinal.EAST);
 	}),
 	//-----------------------------------------------------------------------------------------------------------
-	Contact((Game g, Player p1, Player p2, ArrayList<Pawn> senders, ArrayList<Pawn> receivers, Cardinal orientation) -> {
-		Pawn sender = senders.get(0);
-		Pawn receiver = receivers.get(0);
-		if(sender.coor().distanceTo(receiver.coor()) > 1) return ActionEndReason.TOO_FAR;
-		return receiver.kill(g.board());
+	Contact((ModifierIntroduction mi, Cardinal orientation) -> {
+		return ModifiersUtils.binaryAttack(mi, 1, "contact");
 	}),
 	//-----------------------------------------------------------------------------------------------------------
-	Bandage((Game g, Player p1, Player p2, ArrayList<Pawn> senders, ArrayList<Pawn> receivers, Cardinal orientation) -> {
-		if(!p1.isBowBandaged()) return ActionEndReason.CANT_BANDAGE_TWICE;
-		p1.setBowBandaged(true);
-		return ActionEndReason.SUCCESS;
+	Bandage((ModifierIntroduction mi, Cardinal orientation) -> {
+		if (!mi.p1.isBowBandaged()) mi.setEr(ActionEndReason.CANT_BANDAGE_TWICE);
+		mi.p1.setBowBandaged(true);
+		return mi.finish(ModifiersUtils.introStringPa(mi.p1, "bandaging"));
 	}),
 	//-----------------------------------------------------------------------------------------------------------
-	Unbandage((Game g, Player p1, Player p2, ArrayList<Pawn> senders, ArrayList<Pawn> receivers, Cardinal orientation) -> {
-		if(p1.isBowBandaged()) return ActionEndReason.CANT_UNBANDAGE_UNBANDAGED;
-		p1.setBowBandaged(false);
-		return ActionEndReason.SUCCESS;
+	Unbandage((ModifierIntroduction mi, Cardinal orientation) -> {
+		if (mi.p1.isBowBandaged()) mi.setEr(ActionEndReason.CANT_UNBANDAGE_TWICE);
+		mi.p1.setBowBandaged(false);
+		return mi.finish(ModifiersUtils.introStringPa(mi.p1, "unbandaging"));
 	}),
 	//-----------------------------------------------------------------------------------------------------------
-	Bow((Game g, Player p1, Player p2, ArrayList<Pawn> senders, ArrayList<Pawn> receivers, Cardinal orientation) -> {
-		Pawn sender = senders.get(0);
-		Pawn receiver = receivers.get(0);
-		if(!sender.getOwner().isBowBandaged()) return ActionEndReason.BOW_UNBANDAGED;
-		if(sender.coor().distanceTo(receiver.coor()) > 2) return ActionEndReason.TOO_FAR;
-		ModifierToolKit unbandaging = new ModifierToolKit(Unbandage, g, p1, null, null, null, null);
-		g.tryRemovePlannedUntil(unbandaging, g.clockNextTurn() + 4);
-		g.addPlanned(unbandaging, g.clockNextTurn() + 4);
-		return receiver.kill(g.board());
+	Bow((ModifierIntroduction mi, Cardinal orientation) -> {
+		ModifierConclusion mc = ModifiersUtils.binaryAttack(mi, 2, "bow");
+		ModifierToolKit unbandaging = new ModifierToolKit(Unbandage, mi.after, mi.p1, null, null, null, null);
+		mi.after.tryRemovePlannedUntil(unbandaging, mi.after.clockNextTurn() + 4);
+		mi.after.addPlanned(unbandaging, mi.after.clockNextTurn() + 4);
+		return mc;
 	});
-	
+
 	private ModifExpr expr;
-	
+
 	Modifiers(ModifExpr expr) {
 		this.expr = expr;
 	}
 
-	ActionEndReason execute(Game g, Player p1, Player p2, ArrayList<Pawn> senders, ArrayList<Pawn> receivers, Cardinal orientation) {
-		return expr.execute(g, p1, p2, senders, receivers, orientation);	
+	ModifierConclusion execute(Game g, ArrayList<Integer> playersI, ArrayList<ArrayList<Integer>> pawnsI, Cardinal orientation) {
+		ModifierIntroduction mi = new ModifierIntroduction(g, playersI, pawnsI);
+		if (!mi.coherent) return new ModifierConclusion(ActionEndReason.INCOHERENT, "Incoherent data was given.", g, g);
+		return expr.execute(mi, orientation);
 	}
 }

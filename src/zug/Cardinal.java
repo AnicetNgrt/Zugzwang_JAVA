@@ -19,14 +19,14 @@ public enum Cardinal {
 		Cardinal[] res = new Cardinal[from.length];
 		if(from.length == 0) {
 			return from;
-		} else if(from.length > 1) {
+		} else if (from.length > 1) {
 			int i = 0;
-			for(Cardinal c:from) {
+			for (Cardinal c : from) {
 				res[i++] = rotate(this, c)[0];
 			}
-		} else {	
+		} else {
 			res[0] = Cardinal.values()[(from[0].i + this.i) % Cardinal.values().length];
 		}
 		return res;
-	}	
+	}
 }

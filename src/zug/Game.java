@@ -3,15 +3,15 @@ package zug;
 import java.util.ArrayList;
 
 public class Game {
-	
-	private final int MAX_CLOCK = 3996;
+
+	private final int MAX_CLOCK = 99999;
 	private Rules rules;
 	private ArrayList<Player> players;
 	private ArrayList<ModifierToolKit>[] planned;
 	private ArrayList<TriggeredModifier> triggers;
 	private Board board;
 	private int clock;
-	
+
 	Rules rules() {
 		return rules;
 	}
@@ -29,7 +29,12 @@ public class Game {
 	}
 	
 	void addToClock(int time) {
-		this.clock += time;
+		for (int c = clock + 1; c <= clock + time; c++) {
+			for (ModifierToolKit mtk : planned[c]) {
+				mtk.execute();
+			}
+		}
+		clock += time;
 	}
 	
 	Board board() {
@@ -45,16 +50,26 @@ public class Game {
 	}
 	
 	void tryRemovePlanned(ModifierToolKit mtk, int clock) {
-		if(planned[clock].contains(mtk)) planned[clock].remove(mtk);
+		planned[clock].remove(mtk);
 	}
-	
+
 	void tryRemovePlannedUntil(ModifierToolKit mtk, int maxClock) {
-		for(int c = clock; c <= maxClock; c++) {
+		for (int c = clock; c <= maxClock; c++) {
 			tryRemovePlanned(mtk, c);
 		}
 	}
-	
+
 	void tryRemoveTrigger(TriggeredModifier tm) {
-		if(triggers.contains(tm)) triggers.remove(tm);
+		triggers.remove(tm);
+	}
+
+	public Player getPlayer(int pI) {
+		if (pI < 0 || pI >= players.size()) return null;
+		return players.get(pI);
+	}
+
+	public Game copy() {
+		Game copy = new Game();
+		return copy;
 	}
 }
