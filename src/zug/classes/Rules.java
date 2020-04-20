@@ -10,6 +10,12 @@ public class Rules {
 	private int maxWeight;
 	private int maxAp;
 
+	public Rules(String name, int mw, int map) {
+		this.name = name;
+		maxAp = map;
+		maxWeight = mw;
+	}
+
 	public static Rules fromJson(String jsonPath) {
 		JsonUtils<Rules> jUtils = new JsonUtils<>(Rules.class);
 		return jUtils.readJson(jsonPath);

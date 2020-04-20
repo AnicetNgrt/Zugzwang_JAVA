@@ -1,5 +1,8 @@
 package zug.classes;
 
+import utils.JsonUtils;
+import zug.jsonClasses.JsonBoard;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -83,8 +86,14 @@ public class Board {
         }
     }
 
-    public static Board fromTxt(String boardPath) {
-        return null;
+    public static Board fromJson(String jsonPath) {
+        JsonUtils<JsonBoard> jUtils = new JsonUtils<>(JsonBoard.class);
+        JsonBoard jb = jUtils.readJson(jsonPath);
+
+        Board b = new Board(Sizes.valueOf(jb.sizeName));
+        b.obstructedMap = jb.obstructedMap;
+        b.restrictedMap = jb.restrictedMap;
+        return b;
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
@@ -132,8 +141,15 @@ public class Board {
         return this.size.maxCoor;
     }
 
-    public String toTxt(HashMap<String, String> pathes) {
-        return "";
+    public String toJson(HashMap<String, String> pathes) {
+        String path = pathes.get(this.getClass().getName());
+        JsonUtils<JsonBoard> jUtils = new JsonUtils<>(JsonBoard.class);
+        JsonBoard jb = new JsonBoard();
+        jb.obstructedMap = obstructedMap;
+        jb.restrictedMap = restrictedMap;
+        jb.sizeName = size.name();
+        jUtils.writeJson(path, jb);
+        return path;
     }
 
     public enum Sizes {

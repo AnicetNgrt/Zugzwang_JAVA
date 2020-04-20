@@ -52,7 +52,7 @@ public class GameState {
 		for (String path : gsj.playersPaths)
 			players.add(Player.fromJson(path));
 
-		GameState gs = new GameState(players, Rules.fromJson(gsj.rulesPath), Board.fromTxt(gsj.boardPath), gsj.maxClock);
+		GameState gs = new GameState(players, Rules.fromJson(gsj.rulesPath), Board.fromJson(gsj.boardPath), gsj.maxClock);
 
 		int i = 0;
 		for (ArrayList<String> ls : gsj.plannedPaths) {
@@ -123,7 +123,7 @@ public class GameState {
 		String path = pathes.get(this.getClass().getName()) + "gameState|" + id + ".json";
 		JsonUtils<JsonGameState> jUtils = new JsonUtils<>(JsonGameState.class);
 		JsonGameState jgs = new JsonGameState();
-		jgs.boardPath = board.toTxt(pathes);
+		jgs.boardPath = board.toJson(pathes);
 		jgs.clock = clock;
 		jgs.maxClock = MAX_CLOCK;
 		jgs.rulesPath = pathes.get("Rules");

@@ -13,13 +13,13 @@ public class Game {
     private ArrayList<String> pNames;
     private Rules rules;
 
-    Game(ArrayList<String> pNames, Rules rules) {
+    public Game(ArrayList<String> pNames, Rules rules) {
         this.rules = rules;
         this.pNames = pNames;
         this.states = new LinkedList<>();
     }
 
-    static Game fromJson(String jsonPath) {
+    public static Game fromJson(String jsonPath) {
         JsonUtils<JsonGame> jUtils = new JsonUtils<>(JsonGame.class);
         JsonGame gj = jUtils.readJson(jsonPath);
         Game g = new Game(gj.pNames, Rules.fromJson(gj.rulesPath));
@@ -28,7 +28,7 @@ public class Game {
         return g;
     }
 
-    void toJson(String name, String assetPath) {
+    public String toJson(String name, String assetPath) {
         if (!assetPath.endsWith("\\")) assetPath += "\\";
         if (name.endsWith("\\")) name = name.substring(0, name.length() - 2);
 
@@ -61,6 +61,9 @@ public class Game {
                 jg.statesPaths.add(gs.toJson(pathes));
 
             jUtils.writeJson(gamePath + name + ".json", jg);
+            return gamePath;
         }
+
+        return "Failure";
     }
 }
