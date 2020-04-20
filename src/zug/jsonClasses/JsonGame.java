@@ -1,4 +1,4 @@
-package app;
+package zug.jsonClasses;
 
 import java.util.ArrayList;
 

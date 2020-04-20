@@ -4,6 +4,8 @@ import utils.JsonUtils;
 import zug.enums.ActionEndReason;
 import zug.jsonClasses.JsonPawn;
 
+import java.util.HashMap;
+
 public class Pawn {
 	private Coor2d coor;
 	private Player owner;
@@ -60,11 +62,23 @@ public class Pawn {
 	boolean isAlive() {
 		return alive;
 	}
-	
+
 	ActionEndReason kill(Board b) {
-		if(!alive) return ActionEndReason.CANT_DIE_TWICE;
+		if (!alive) return ActionEndReason.CANT_DIE_TWICE;
 		alive = false;
 		b.setObstructed(coor, false);
 		return ActionEndReason.SUCCESS;
+	}
+
+	public String toJson(HashMap<String, String> pathes, int i) {
+		String path = pathes.get(this.getClass().getName()) + "pawn|" + i + "|" + owner.name() + ".json";
+		JsonUtils<JsonPawn> jUtils = new JsonUtils<>(JsonPawn.class);
+		JsonPawn jpa = new JsonPawn();
+		jpa.alive = alive;
+		jpa.exiled = exiled;
+		jpa.x = coor.x();
+		jpa.y = coor.y();
+		jUtils.writeJson(path, jpa);
+		return path;
 	}
 }

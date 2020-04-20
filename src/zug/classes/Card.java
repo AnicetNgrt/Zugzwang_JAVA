@@ -7,6 +7,7 @@ import zug.enums.Cardinal;
 import zug.jsonClasses.JsonCard;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Card {
     private CardTypes type;
@@ -110,8 +111,25 @@ public class Card {
         if (mc.endReason == ActionEndReason.SUCCESS) reveal();
         return mc;
     }
-	
-	void turnReset() {
-		playedTurn = 0;
-	}
+
+    void turnReset() {
+        playedTurn = 0;
+    }
+
+    public String toJson(HashMap<String, String> pathes) {
+        String path = pathes.get(this.getClass().getName()) + "card|" + type.name() + "|" + owner.name() + ".json";
+        JsonUtils<JsonCard> jUtils = new JsonUtils<>(JsonCard.class);
+        JsonCard jca = new JsonCard();
+        jca.orientationName = orientation.name();
+        jca.playedGame = playedGame;
+        jca.playedTurn = playedTurn;
+        jca.shown = shown;
+        jca.typeName = type.name();
+        jca.actionsPaths = new ArrayList<>();
+        for (Action a : actions) {
+            jca.actionsPaths.add(a.toJson(pathes));
+        }
+        jUtils.writeJson(path, jca);
+        return path;
+    }
 }

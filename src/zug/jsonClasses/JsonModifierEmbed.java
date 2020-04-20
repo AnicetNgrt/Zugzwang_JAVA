@@ -2,7 +2,7 @@ package zug.jsonClasses;
 
 import java.util.ArrayList;
 
-public class JsonModifierToolKit {
+public class JsonModifierEmbed {
     public String modifierName;
     public ArrayList<Integer> playersI;
     public ArrayList<ArrayList<Integer>> pawnsI;

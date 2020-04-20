@@ -1,6 +1,7 @@
 package zug.classes;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Board {
     private final Coor2d[][] shiftMap;
@@ -129,6 +130,10 @@ public class Board {
 
     Coor2d maxCoor() {
         return this.size.maxCoor;
+    }
+
+    public String toTxt(HashMap<String, String> pathes) {
+        return "";
     }
 
     public enum Sizes {

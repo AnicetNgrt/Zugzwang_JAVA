@@ -7,6 +7,8 @@ import zug.enums.Modifiers;
 import zug.jsonClasses.JsonAction;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Random;
 
 public class Action {
 	private Modifiers modifier;
@@ -52,5 +54,16 @@ public class Action {
 
 	public String toString() {
 		return "";
+	}
+
+	public String toJson(HashMap<String, String> pathes) {
+		int id = new Random().nextInt(99);
+		String path = pathes.get(this.getClass().getName()) + "action|" + modifier.name() + "|" + id + ".json";
+		JsonUtils<JsonAction> jUtils = new JsonUtils<>(JsonAction.class);
+		JsonAction ja = new JsonAction();
+		ja.modifierName = modifier.name();
+		ja.cost = cost;
+		jUtils.writeJson(path, ja);
+		return path;
 	}
 }

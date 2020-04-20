@@ -48,7 +48,7 @@ public enum Modifiers {
 
 		ModifierConclusion mc = ModifiersUtils.binaryAttack(mi, 2, "bow");
 
-		ModifierToolKit unbandaging = new ModifierToolKit(Unbandage, mi.playersI, null, null);
+		ModifierEmbed unbandaging = new ModifierEmbed(Unbandage, mi.playersI, null, null);
 		mi.after.tryRemovePlannedUntil(unbandaging, mi.after.clockNextTurn() + 4);
 		mi.after.addPlanned(unbandaging, mi.after.clockNextTurn() + 4);
 		return mc;

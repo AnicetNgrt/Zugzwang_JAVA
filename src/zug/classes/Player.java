@@ -4,6 +4,8 @@ import utils.JsonUtils;
 import zug.jsonClasses.JsonPlayer;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Random;
 
 public class Player {
 	private String name;
@@ -102,5 +104,28 @@ public class Player {
 	public Pawn getPawn(Integer i) {
 		if (i < 0 || i >= pawns.size()) return null;
 		return pawns.get(i);
+	}
+
+	public String toJson(HashMap<String, String> pathes) {
+		int id = new Random().nextInt(99);
+		String path = pathes.get(this.getClass().getName()) + "player|" + name + "|" + id + ".json";
+		JsonUtils<JsonPlayer> jUtils = new JsonUtils<>(JsonPlayer.class);
+		JsonPlayer jp = new JsonPlayer();
+		jp.ap = ap;
+		jp.isBowBandaged = isBowBandaged;
+		jp.isPacman = isPacman;
+		jp.name = name;
+		jp.rulesPath = pathes.get("Rules");
+		jp.handPaths = new ArrayList<>();
+		for (Card c : hand) {
+			jp.handPaths.add(c.toJson(pathes));
+		}
+		jp.pawnsPaths = new ArrayList<>();
+		int i = 0;
+		for (Pawn pa : pawns) {
+			jp.pawnsPaths.add(pa.toJson(pathes, i++));
+		}
+		jUtils.writeJson(path, jp);
+		return path;
 	}
 }
