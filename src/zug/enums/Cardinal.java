@@ -3,17 +3,18 @@ package zug.enums;
 import zug.classes.Coor2d;
 
 public enum Cardinal {
-	NORTH(0, new Coor2d(0, 1)), EAST(1, new Coor2d(1, 0)), SOUTH(2, new Coor2d(0, -1)), WEST(3, new Coor2d(-1, 0));
+    NORTH(0, new Coor2d(0, 1)), EAST(1, new Coor2d(1, 0)), SOUTH(2, new Coor2d(0, -1)), WEST(3, new Coor2d(-1, 0)),
+    NONE(4, new Coor2d(0, 0));
 
-	private int i;
-	private Coor2d vector;
+    private int i;
+    private Coor2d vector;
 
-	Cardinal(int i, Coor2d vector) {
-		this.i = i;
-		this.vector = vector;
-	}
+    Cardinal(int i, Coor2d vector) {
+        this.i = i;
+        this.vector = vector;
+    }
 
-	public Coor2d vector() {
+    public Coor2d vector() {
 		return vector;
 	}
 
@@ -27,8 +28,8 @@ public enum Cardinal {
 				res[i++] = rotate(this, c)[0];
 			}
 		} else {
-			res[0] = Cardinal.values()[(from[0].i + this.i) % Cardinal.values().length];
-		}
+            res[0] = Cardinal.values()[(from[0].i + this.i) % 4];
+        }
 		return res;
 	}
 }

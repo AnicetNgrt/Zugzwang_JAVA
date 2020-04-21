@@ -1,0 +1,18 @@
+{
+  "name": "Anicet",
+  "pawnsPaths": [
+    "C:\\IdeaProjects\\Zugzwang\\src\\assets\\gameTestCopy\\pawns\\pawn_0_Anicet_1057941451.json",
+    "C:\\IdeaProjects\\Zugzwang\\src\\assets\\gameTestCopy\\pawns\\pawn_1_Anicet_1975358023.json",
+    "C:\\IdeaProjects\\Zugzwang\\src\\assets\\gameTestCopy\\pawns\\pawn_2_Anicet_2101440631.json"
+  ],
+  "handPaths": [
+    "C:\\IdeaProjects\\Zugzwang\\src\\assets\\gameTestCopy\\cards\\card_SMALL_RIVERS_Anicet_532445947.json",
+    "C:\\IdeaProjects\\Zugzwang\\src\\assets\\gameTestCopy\\cards\\card_CONTACT_Anicet_1289479439.json",
+    "C:\\IdeaProjects\\Zugzwang\\src\\assets\\gameTestCopy\\cards\\card_CLOCK_MAKER_Anicet_2096171631.json",
+    "C:\\IdeaProjects\\Zugzwang\\src\\assets\\gameTestCopy\\cards\\card_ARCHER_Anicet_1537358694.json"
+  ],
+  "isPacman": true,
+  "isBowBandaged": false,
+  "ap": 4,
+  "rulesPath": "C:\\IdeaProjects\\Zugzwang\\src\\assets\\gameTestCopy\\rules_basic.json"
+}

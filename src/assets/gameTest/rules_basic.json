@@ -1,0 +1,11 @@
+{
+  "name": "basic",
+  "maxWeight": 10,
+  "maxAp": 4,
+  "maxClock": 21,
+  "maxPawn": 4,
+  "startPawn": 3,
+  "boardSize": "STANDARD",
+  "canDuplicateCard": false,
+  "playerCount": 2
+}

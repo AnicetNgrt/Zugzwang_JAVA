@@ -86,7 +86,7 @@ public enum CardTypes {
         return shown;
     }
 
-    Card getOne(Cardinal orientation, Player owner) {
+    public Card getOne(Cardinal orientation, Player owner) {
         ArrayList<Action> cardActions = new ArrayList<>();
         for (Action a : actions) {
             cardActions.add(new Action(a));

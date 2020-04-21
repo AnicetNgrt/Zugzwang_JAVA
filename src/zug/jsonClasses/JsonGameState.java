@@ -1,12 +1,38 @@
 package zug.jsonClasses;
 
-import java.util.ArrayList;
+import com.github.cliftonlabs.json_simple.JsonObject;
+import com.github.cliftonlabs.json_simple.Jsonable;
 
-public class JsonGameState {
-    public int maxClock;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+
+public class JsonGameState implements Jsonable {
     public String rulesPath;
-    public ArrayList<String> playersPaths;
-    public ArrayList<String>[] plannedPaths;
+    public String[] playersPaths;
+    public String[][] plannedPaths;
     public String boardPath;
     public int clock;
+
+    @Override
+    public String toJson() {
+        final StringWriter writable = new StringWriter();
+        try {
+            this.toJson(writable);
+        } catch (final IOException e) {
+            e.printStackTrace();
+        }
+        return writable.toString();
+    }
+
+    @Override
+    public void toJson(Writer writer) throws IOException {
+        final JsonObject json = new JsonObject();
+        json.put("rulesPath", rulesPath);
+        json.put("playersPaths", playersPaths);
+        json.put("plannedPaths", plannedPaths);
+        json.put("boardPath", boardPath);
+        json.put("clock", clock);
+        json.toJson(writer);
+    }
 }

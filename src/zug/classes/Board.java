@@ -87,8 +87,7 @@ public class Board {
     }
 
     public static Board fromJson(String jsonPath) {
-        JsonUtils<JsonBoard> jUtils = new JsonUtils<>(JsonBoard.class);
-        JsonBoard jb = jUtils.readJson(jsonPath);
+        JsonBoard jb = (JsonBoard) JsonUtils.readJson(jsonPath, JsonBoard.class);
 
         Board b = new Board(Sizes.valueOf(jb.sizeName));
         b.obstructedMap = jb.obstructedMap;
@@ -138,17 +137,17 @@ public class Board {
     }
 
     Coor2d maxCoor() {
-        return this.size.maxCoor;
+        return this.size.maxCoor();
     }
 
     public String toJson(HashMap<String, String> pathes) {
-        String path = pathes.get(this.getClass().getName());
-        JsonUtils<JsonBoard> jUtils = new JsonUtils<>(JsonBoard.class);
+        int id = System.identityHashCode(this);
+        String path = pathes.get("Board") + "board_" + id + ".json";
         JsonBoard jb = new JsonBoard();
         jb.obstructedMap = obstructedMap;
         jb.restrictedMap = restrictedMap;
         jb.sizeName = size.name();
-        jUtils.writeJson(path, jb);
+        JsonUtils.writeJson(path, jb);
         return path;
     }
 

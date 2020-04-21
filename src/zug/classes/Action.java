@@ -8,7 +8,6 @@ import zug.jsonClasses.JsonAction;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Random;
 
 public class Action {
 	private Modifiers modifier;
@@ -24,12 +23,11 @@ public class Action {
 	}
 
 	public static Action fromJson(String jsonPath) {
-		JsonUtils<JsonAction> jUtils = new JsonUtils<>(JsonAction.class);
-		JsonAction aj = jUtils.readJson(jsonPath);
+        JsonAction aj = (JsonAction) JsonUtils.readJson(jsonPath, JsonAction.class);
 
-		Modifiers modifier = Modifiers.valueOf(aj.modifierName);
-		return new Action(modifier, aj.cost);
-	}
+        Modifiers modifier = Modifiers.valueOf(aj.modifierName);
+        return new Action(modifier, aj.cost);
+    }
 
 	int cost() {
 		return cost;
@@ -57,13 +55,12 @@ public class Action {
 	}
 
 	public String toJson(HashMap<String, String> pathes) {
-		int id = new Random().nextInt(99);
-		String path = pathes.get(this.getClass().getName()) + "action|" + modifier.name() + "|" + id + ".json";
-		JsonUtils<JsonAction> jUtils = new JsonUtils<>(JsonAction.class);
-		JsonAction ja = new JsonAction();
-		ja.modifierName = modifier.name();
-		ja.cost = cost;
-		jUtils.writeJson(path, ja);
-		return path;
-	}
+        int id = System.identityHashCode(this);
+        String path = pathes.get("Action") + "action_" + modifier.name() + "_" + id + ".json";
+        JsonAction ja = new JsonAction();
+        ja.modifierName = modifier.name();
+        ja.cost = cost;
+        JsonUtils.writeJson(path, ja);
+        return path;
+    }
 }

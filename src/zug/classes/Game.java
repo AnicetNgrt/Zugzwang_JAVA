@@ -4,7 +4,10 @@ import utils.JsonUtils;
 import zug.jsonClasses.JsonGame;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -12,20 +15,61 @@ public class Game {
     private LinkedList<GameState> states;
     private ArrayList<String> pNames;
     private Rules rules;
+    private int mainIndex;
 
     public Game(ArrayList<String> pNames, Rules rules) {
         this.rules = rules;
         this.pNames = pNames;
         this.states = new LinkedList<>();
+
+        ArrayList<Player> players = new ArrayList<>();
+        for (String name : pNames) {
+            players.add(new Player(name, rules));
+        }
+        Board.Sizes size = Board.Sizes.valueOf(rules.boardSize);
+        GameState ini = new GameState(players, rules, new Board(size));
+
+        states.add(ini);
+        mainIndex = 0;
+    }
+
+    public Game() {
     }
 
     public static Game fromJson(String jsonPath) {
-        JsonUtils<JsonGame> jUtils = new JsonUtils<>(JsonGame.class);
-        JsonGame gj = jUtils.readJson(jsonPath);
-        Game g = new Game(gj.pNames, Rules.fromJson(gj.rulesPath));
+        JsonGame gj = (JsonGame) JsonUtils.readJson(jsonPath, JsonGame.class);
+        Game g = new Game();
+        g.states = new LinkedList<>();
+        g.pNames = new ArrayList<>();
+        assert gj != null;
+        g.rules = Rules.fromJson(gj.rulesPath);
+        g.mainIndex = gj.mainIndex;
+        Collections.addAll(g.pNames, gj.pNames);
         for (String path : gj.statesPaths)
             g.states.add(GameState.fromJson(path));
+
         return g;
+    }
+
+    public boolean updateState(GameState gs) {
+        int i = commitState(gs);
+        return pushState(i);
+    }
+
+    public int commitState(GameState gs) {
+        states.add(gs);
+        return states.indexOf(gs);
+    }
+
+    public boolean pushState(int index) {
+        if (index < 0 || index >= states.size()) return false;
+        if (states.get(index) == null) return false;
+        mainIndex = index;
+        return true;
+    }
+
+    public GameState getCurrent() {
+        return states.get(mainIndex);
     }
 
     public String toJson(String name, String assetPath) {
@@ -35,32 +79,45 @@ public class Game {
         HashMap<String, String> pathes = new HashMap<>();
 
         String gamePath = assetPath + name + "\\";
+        System.out.println(assetPath + name + "\\");
         File gameFolder = new File(gamePath);
-        boolean bool = gameFolder.mkdir();
+        boolean bool = true;
+        if (!Files.exists(Path.of(gamePath))) {
+            bool = gameFolder.mkdir();
+        }
 
         pathes.put("GameState", gamePath + "gameStates\\");
         pathes.put("Action", gamePath + "actions\\");
-        pathes.put("Rules", gamePath + "rules.json");
         pathes.put("Card", gamePath + "cards\\");
+        pathes.put("Board", gamePath + "boards\\");
         pathes.put("Player", gamePath + "players\\");
         pathes.put("Pawn", gamePath + "pawns\\");
-        pathes.put("ModifierToolKit", gamePath + "modifierToolKits\\");
+        pathes.put("ModifierEmbed", gamePath + "modifierEmbeds\\");
 
         for (String key : pathes.keySet()) {
             File folder = new File(pathes.get(key));
-            bool = folder.mkdir() && bool;
+            if (!Files.exists(Path.of(pathes.get(key)))) {
+                bool = folder.mkdir() && bool;
+            }
         }
 
-        if (bool) {
-            JsonUtils<JsonGame> jUtils = new JsonUtils<>(JsonGame.class);
-            JsonGame jg = new JsonGame();
-            jg.pNames = pNames;
-            jg.rulesPath = rules.toJson(pathes);
-            jg.statesPaths = new ArrayList<>();
-            for (GameState gs : states)
-                jg.statesPaths.add(gs.toJson(pathes));
+        System.out.println(bool);
+        pathes.put("Rules", gamePath + "rules_" + rules.name + ".json");
 
-            jUtils.writeJson(gamePath + name + ".json", jg);
+        if (bool) {
+            JsonGame jg = new JsonGame();
+            jg.pNames = new String[pNames.size()];
+            int i = 0;
+            for (String s : pNames)
+                jg.pNames[i++] = s;
+            jg.rulesPath = rules.toJson(pathes);
+            jg.statesPaths = new String[states.size()];
+            jg.mainIndex = mainIndex;
+            i = 0;
+            for (GameState gs : states)
+                jg.statesPaths[i++] = gs.toJson(pathes);
+
+            JsonUtils.writeJson(gamePath + name + ".json", jg);
             return gamePath;
         }
 

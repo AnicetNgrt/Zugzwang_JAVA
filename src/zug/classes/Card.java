@@ -36,8 +36,7 @@ public class Card {
     }
 
     public static Card fromJson(String jsonPath, Player owner) {
-        JsonUtils<JsonCard> jUtils = new JsonUtils<>(JsonCard.class);
-        JsonCard cj = jUtils.readJson(jsonPath);
+        JsonCard cj = (JsonCard) JsonUtils.readJson(jsonPath, JsonCard.class);
 
         Cardinal orientation = Cardinal.valueOf(cj.orientationName);
         CardTypes type = CardTypes.valueOf(cj.typeName);
@@ -117,19 +116,20 @@ public class Card {
     }
 
     public String toJson(HashMap<String, String> pathes) {
-        String path = pathes.get(this.getClass().getName()) + "card|" + type.name() + "|" + owner.name() + ".json";
-        JsonUtils<JsonCard> jUtils = new JsonUtils<>(JsonCard.class);
+        int id = System.identityHashCode(this);
+        String path = pathes.get("Card") + "card_" + type.name() + "_" + owner.name() + "_" + id + ".json";
         JsonCard jca = new JsonCard();
         jca.orientationName = orientation.name();
         jca.playedGame = playedGame;
         jca.playedTurn = playedTurn;
         jca.shown = shown;
         jca.typeName = type.name();
-        jca.actionsPaths = new ArrayList<>();
+        jca.actionsPaths = new String[actions.size()];
+        int i = 0;
         for (Action a : actions) {
-            jca.actionsPaths.add(a.toJson(pathes));
+            jca.actionsPaths[i++] = a.toJson(pathes);
         }
-        jUtils.writeJson(path, jca);
+        JsonUtils.writeJson(path, jca);
         return path;
     }
 }

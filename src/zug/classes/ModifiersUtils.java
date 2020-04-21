@@ -47,7 +47,7 @@ public class ModifiersUtils {
         // APPLICATION SUR AFTER
         mi.b.setObstructed(mi.fpp1.coor(), false);
         mi.b.setObstructed(pos, true);
-        mi.fpp1.moveTo(pos);
+        mi.fpp1.moveTo(pos, mi.b);
 
         return mi.finish(cclStr.toString());
     }

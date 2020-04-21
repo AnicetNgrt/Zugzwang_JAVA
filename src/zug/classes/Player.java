@@ -5,7 +5,6 @@ import zug.jsonClasses.JsonPlayer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Random;
 
 public class Player {
 	private String name;
@@ -23,7 +22,7 @@ public class Player {
 		isPacman = true;
 		isBowBandaged = false;
 		this.rules = rules;
-		ap = rules.maxAp();
+		ap = rules.maxAp;
 	}
 
 	Player(Player p) {
@@ -40,10 +39,10 @@ public class Player {
 	}
 
 	public static Player fromJson(String jsonPath) {
-		JsonUtils<JsonPlayer> jUtils = new JsonUtils<>(JsonPlayer.class);
-		JsonPlayer pj = jUtils.readJson(jsonPath);
+		JsonPlayer pj = (JsonPlayer) JsonUtils.readJson(jsonPath, JsonPlayer.class);
 
 		Player p = new Player(pj.name, Rules.fromJson(pj.rulesPath));
+
 		for (String path : pj.pawnsPaths)
 			p.pawns.add(Pawn.fromJson(path, p));
 
@@ -57,8 +56,11 @@ public class Player {
 		return p;
 	}
 
-	void addPawn(Pawn p) {
+	boolean addPawn(Pawn p) {
+		if (getPawnCount() >= rules.maxPawn) return false;
+		if (pawns.contains(p)) return false;
 		pawns.add(p);
+		return true;
 	}
 
 	int handWeight() {
@@ -68,8 +70,18 @@ public class Player {
 		return w;
 	}
 
-	void addCard(Card c) {
-		if (handWeight() + c.type().weight() > rules.maxWeight()) return;
+	boolean addCard(Card c) {
+		if (handWeight() + c.type().weight() > rules.maxWeight) return false;
+		if (!rules.canDuplicateCard) {
+			for (Card ca : hand) {
+				if (ca.type().equals(c.type())) return false;
+			}
+		}
+		giveCard(c);
+		return true;
+	}
+
+	void giveCard(Card c) {
 		hand.add(c);
 	}
 
@@ -106,26 +118,45 @@ public class Player {
 		return pawns.get(i);
 	}
 
+	public int getPawnCount() {
+		return pawns.size();
+	}
+
+	public Card getCard(Integer i) {
+		if (i < 0 || i >= hand.size()) return null;
+		return hand.get(i);
+	}
+
+	public int getCardCount() {
+		return hand.size();
+	}
+
 	public String toJson(HashMap<String, String> pathes) {
-		int id = new Random().nextInt(99);
-		String path = pathes.get(this.getClass().getName()) + "player|" + name + "|" + id + ".json";
-		JsonUtils<JsonPlayer> jUtils = new JsonUtils<>(JsonPlayer.class);
+		int id = System.identityHashCode(this);
+		String path = pathes.get("Player") + "player_" + name + "_" + id + ".json";
 		JsonPlayer jp = new JsonPlayer();
 		jp.ap = ap;
 		jp.isBowBandaged = isBowBandaged;
 		jp.isPacman = isPacman;
 		jp.name = name;
 		jp.rulesPath = pathes.get("Rules");
-		jp.handPaths = new ArrayList<>();
-		for (Card c : hand) {
-			jp.handPaths.add(c.toJson(pathes));
-		}
-		jp.pawnsPaths = new ArrayList<>();
+		jp.handPaths = new String[hand.size()];
 		int i = 0;
-		for (Pawn pa : pawns) {
-			jp.pawnsPaths.add(pa.toJson(pathes, i++));
+		for (Card c : hand) {
+			jp.handPaths[i++] = c.toJson(pathes);
 		}
-		jUtils.writeJson(path, jp);
+		jp.pawnsPaths = new String[pawns.size()];
+		i = 0;
+		for (Pawn pa : pawns) {
+			jp.pawnsPaths[i] = pa.toJson(pathes, i++);
+		}
+		JsonUtils.writeJson(path, jp);
 		return path;
+	}
+
+	public void turnReset() {
+		ap = rules.maxAp;
+		for (Card c : hand)
+			c.turnReset();
 	}
 }
