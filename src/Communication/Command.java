@@ -67,11 +67,11 @@ public class Command {
     @Override
     public String toString() {
         if (type == null) return "null command";
-        String str = type.name();
+        StringBuilder str = new StringBuilder(type.name());
         for (String key : strParams.keySet())
-            str += " " + key + ": " + strParams.get(key);
+            str.append(" ").append(key).append(": ").append(strParams.get(key));
         for (String key : intParams.keySet())
-            str += " " + key + ": " + intParams.get(key);
-        return str;
+            str.append(" ").append(key).append(": ").append(intParams.get(key));
+        return str.toString();
     }
 }

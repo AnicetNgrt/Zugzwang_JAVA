@@ -30,7 +30,6 @@ public class Server {
         }
     }
 
-
     public void open() {
 
         Thread t = new Thread(() -> {

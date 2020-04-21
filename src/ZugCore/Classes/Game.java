@@ -19,7 +19,8 @@ public class Game {
 
     public Game(ArrayList<String> pNames, Rules rules) {
         this.rules = rules;
-        this.pNames = pNames;
+        int lastI = Math.min(rules.playerCount, pNames.size());
+        this.pNames = (ArrayList<String>) pNames.subList(0, lastI);
         this.states = new LinkedList<>();
 
         ArrayList<Player> players = new ArrayList<>();

@@ -26,31 +26,28 @@ public class Player {
 	}
 
 	Player(Player p) {
-		this(p.name, p.rules);
-		ap = p.ap;
-		for (Pawn pa : p.pawns) {
-			addPawn(new Pawn(pa, this));
-		}
-		for (Card ca : p.hand) {
-			addCard(new Card(ca, this));
-		}
-		isPacman = p.isPacman;
-		isBowBandaged = p.isBowBandaged;
-	}
+        this(p.name, p.rules);
+        ap = p.ap;
+        for (Pawn pa : p.pawns) addPawn(new Pawn(pa, this));
+        for (Card ca : p.hand) addCard(new Card(ca, this));
+        isPacman = p.isPacman;
+        isBowBandaged = p.isBowBandaged;
+    }
 
 	public static Player fromJson(String jsonPath) {
-		JsonPlayer pj = (JsonPlayer) JsonUtils.readJson(jsonPath, JsonPlayer.class);
+        JsonPlayer pj = (JsonPlayer) JsonUtils.readJson(jsonPath, JsonPlayer.class);
 
-		Player p = new Player(pj.name, Rules.fromJson(pj.rulesPath));
+        assert pj != null;
+        Player p = new Player(pj.name, Rules.fromJson(pj.rulesPath));
 
-		for (String path : pj.pawnsPaths)
-			p.pawns.add(Pawn.fromJson(path, p));
+        for (String path : pj.pawnsPaths)
+            p.pawns.add(Pawn.fromJson(path, p));
 
-		for (String path : pj.handPaths)
-			p.hand.add(Card.fromJson(path, p));
+        for (String path : pj.handPaths)
+            p.hand.add(Card.fromJson(path, p));
 
-		p.isPacman = pj.isPacman;
-		p.isBowBandaged = pj.isBowBandaged;
+        p.isPacman = pj.isPacman;
+        p.isBowBandaged = pj.isBowBandaged;
 		p.ap = pj.ap;
 
 		return p;

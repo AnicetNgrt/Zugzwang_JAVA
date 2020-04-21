@@ -6,7 +6,7 @@ import ZugCore.Enums.Cardinal;
 public class ModifiersUtils {
 
     public static String introStringPa(Player p, String name) {
-        return "Player " + p.name() + " attempts ";
+        return "Player " + p.name() + " attempts " + name;
     }
 
     public static String introStringPaAtt(Player p1, Player p2, Pawn pa1, Pawn pa2, String name) {
