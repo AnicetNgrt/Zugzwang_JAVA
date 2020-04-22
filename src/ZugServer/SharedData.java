@@ -1,8 +1,8 @@
 package ZugServer;
 
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class SharedData {
-    static volatile HashMap<String, GameLobby> lobbies = new HashMap<>();
-    static volatile HashMap<String, Client> users = new HashMap<>();
+    public static volatile ConcurrentHashMap<String, GameLobby> lobbies = new ConcurrentHashMap<>();
+    public static volatile ConcurrentHashMap<String, Client> users = new ConcurrentHashMap<>();
 }

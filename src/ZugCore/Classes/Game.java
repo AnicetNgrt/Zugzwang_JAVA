@@ -52,6 +52,15 @@ public class Game {
         return g;
     }
 
+    public void disqualify(String pName) {
+        GameState gs = getCurrent();
+        Player p = gs.getPlayer(pName);
+        for (int i = 0; i < rules.maxPawn; i++) {
+            Pawn pa = p.getPawn(i);
+            pa.kill(gs.board());
+        }
+    }
+
     public boolean updateState(GameState gs) {
         int i = commitState(gs);
         return pushState(i);

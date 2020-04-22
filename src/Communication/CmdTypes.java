@@ -2,7 +2,7 @@ package Communication;
 
 public enum CmdTypes {
     MYNAME("myname", 1, "name"),
-    HOST("host", 1, "gameName", "playerCount"),
+    HOST("host", 1, "gameName", "maxPlayerCount", "spectatorsAllowed"),
     JOIN("join", 1, "gameId"),
     ERROR("error", 1, "reason"),
     DISCONNECT("disconnect", 0),

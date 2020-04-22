@@ -1,33 +1,51 @@
 package ZugServer;
 
 import ZugCore.Classes.Game;
+import ZugCore.Classes.GameState;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class GameLobby {
-    private ArrayList<Client> clients;
-    private Game game;
-    private String id;
-    private String name;
-    private int maxPlayerCount;
-    private int spectatorsAllowed;
-    private HashMap<String, ArrayList<String>> teams;
+
+    private final Object gameLock = new Object();
+    private final String id;
+    private final String name;
+    private final int maxPlayerCount;
+    private final int spectatorsAllowed;
+    volatile private CopyOnWriteArrayList<Client> clients;
+    volatile private Game game;
+    volatile private boolean isGameStarted;
 
     GameLobby(String id, Client owner, String name, int maxPlayerCount, int spectatorsAllowed) {
         this.id = id;
-        clients = new ArrayList<>();
+        clients = new CopyOnWriteArrayList<>();
         clients.add(owner);
         this.name = name;
         this.maxPlayerCount = maxPlayerCount;
         this.spectatorsAllowed = spectatorsAllowed;
-        teams = new HashMap<>();
     }
 
     boolean addPlayer(Client c) {
+        if (isGameStarted) return false;
         if (spectatorsAllowed + maxPlayerCount <= clients.size()) return false;
         clients.add(c);
         return true;
+    }
+
+    void kickPlayer(Client c) {
+        clients.remove(c);
+        if (isGameStarted) {
+            synchronized (gameLock) {
+                GameState cgs = game.getCurrent();
+            }
+        }
+    }
+
+    void startGame() {
+        synchronized (gameLock) {
+            isGameStarted = true;
+            game = new Game();
+        }
     }
 
     int playerCount() {
@@ -46,10 +64,6 @@ public class GameLobby {
         return spectatorsAllowed;
     }
 
-    void kickPlayer(Client c) {
-        clients.remove(c);
-    }
-
     boolean isIn(Client c) {
         return clients.contains(c);
     }
@@ -60,5 +74,9 @@ public class GameLobby {
 
     boolean isOwner(Client c) {
         return clients.indexOf(c) == 0;
+    }
+
+    boolean isGameStarted() {
+        return isGameStarted;
     }
 }
