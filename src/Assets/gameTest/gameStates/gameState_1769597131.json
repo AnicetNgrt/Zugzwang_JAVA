@@ -1,0 +1,32 @@
+{
+  "rulesPath": "C:\\IdeaProjects\\Zugzwang\\src\\assets\\gameTest\\rules_basic.json",
+  "playersPaths": [
+    "C:\\IdeaProjects\\Zugzwang\\src\\assets\\gameTest\\players\\player_Anicet_1911006827.json",
+    "C:\\IdeaProjects\\Zugzwang\\src\\assets\\gameTest\\players\\player_Thibo_1792845110.json"
+  ],
+  "plannedPaths": [
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    []
+  ],
+  "boardPath": "C:\\IdeaProjects\\Zugzwang\\src\\assets\\gameTest\\boards\\board_1654589030.json",
+  "clock": 0
+}

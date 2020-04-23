@@ -1,9 +1,8 @@
 package ZwangGameServer;
 
-import NetworkingClasses.CmdTypes;
-import NetworkingClasses.Command;
+import Communication.CmdTypes;
+import Communication.Command;
 import ZwangCore.Classes.Game;
-import ZwangCore.Classes.GameState;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -34,14 +33,12 @@ public class GameLobby {
         if (spectatorsAllowed + maxPlayerCount <= clients.size()) return false;
 
         Command ca1 = new Command(CmdTypes.ADDPLAYER);
-        ca1.set("playerName", newc.getName());
-        ca1.set("playerId", newc.getId());
+        ca1.set("nameInGame", newc.getNameInLobby());
         for (ClientHandler ch : clients) {
             ch.send(ca1);
 
             Command ca2 = new Command(CmdTypes.ADDPLAYER);
-            ca2.set("playerName", ch.getName());
-            ca2.set("playerId", ch.getId());
+            ca2.set("nameInGame", ch.getNameInLobby());
             newc.send(ca2);
         }
         clients.add(newc);
@@ -63,7 +60,7 @@ public class GameLobby {
 
         if (isGameStarted) {
             synchronized (gameLock) {
-                GameState cgs = game.getCurrent();
+                game.disqualify(c.getNameInLobby());
             }
         }
     }

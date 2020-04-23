@@ -1,7 +1,6 @@
-package NetworkingClasses;
+package Communication;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import java.util.HashMap;
 
@@ -23,7 +22,7 @@ public class Command {
     }
 
     public static Command fromJson(String json) {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        Gson gson = new Gson();
         return gson.fromJson(json, Command.class);
     }
 
@@ -60,7 +59,7 @@ public class Command {
     }
 
     public String toJson() {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        Gson gson = new Gson();
         return gson.toJson(this);
     }
 

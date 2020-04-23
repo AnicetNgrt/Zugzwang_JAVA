@@ -1,4 +1,4 @@
-package NetworkingClasses;
+package Communication;
 
 import java.io.IOException;
 import java.net.InetAddress;

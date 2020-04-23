@@ -1,0 +1,11 @@
+{
+  "typeName": "ARCHER",
+  "actionsPaths": [
+    "C:\\IdeaProjects\\Zugzwang\\src\\assets\\gameTestCopy\\actions\\action_Bow_288665596.json",
+    "C:\\IdeaProjects\\Zugzwang\\src\\assets\\gameTestCopy\\actions\\action_Bandage_13648335.json"
+  ],
+  "orientationName": "NORTH",
+  "shown": false,
+  "playedTurn": 0,
+  "playedGame": 0
+}

@@ -1,4 +1,4 @@
-package NetworkingClasses;
+package Communication;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -48,6 +48,5 @@ public class Communicator {
     protected void setWriter(PrintWriter writer) {
         this.writer = writer;
     }
-
 
 }

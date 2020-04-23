@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="JAVA_MODULE" version="4">
+  <component name="FacetManager">
+    <facet type="gwt" name="GWT">
+      <configuration>
+        <setting name="gwtSdkUrl" value="file://C:/gwt-2.8.2" />
+      </configuration>
+    </facet>
+  </component>
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
     <content url="file://$MODULE_DIR$">
@@ -25,5 +32,7 @@
     <orderEntry type="library" name="commons-beanutils-1.9.1" level="project" />
     <orderEntry type="library" name="slf4j-simple-1.6.1" level="project" />
     <orderEntry type="library" name="gson-2.8.6" level="project" />
+    <orderEntry type="library" name="gwt-user" level="project" />
+    <orderEntry type="library" name="javafx" level="project" />
   </component>
 </module>

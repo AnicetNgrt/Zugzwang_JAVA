@@ -1,0 +1,11 @@
+{
+  "typeName": "CLOCK_MAKER",
+  "actionsPaths": [
+    "C:\\IdeaProjects\\Zugzwang\\src\\assets\\gameTest\\actions\\action_MClockLeft_381707837.json",
+    "C:\\IdeaProjects\\Zugzwang\\src\\assets\\gameTest\\actions\\action_MClockRight_589446616.json"
+  ],
+  "orientationName": "NORTH",
+  "shown": true,
+  "playedTurn": 0,
+  "playedGame": 0
+}

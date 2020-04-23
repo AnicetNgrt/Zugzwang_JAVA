@@ -1,8 +1,8 @@
 package ZwangGameServer;
 
-import NetworkingClasses.CmdTypes;
-import NetworkingClasses.Command;
-import NetworkingClasses.Communicator;
+import Communication.CmdTypes;
+import Communication.Command;
+import Communication.Communicator;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -112,7 +112,14 @@ public class ClientHandler extends Communicator implements Runnable {
             case GIVEID:
                 ca = new Command(CmdTypes.GIVEID);
                 ca.set("id", this.getId());
+                send(ca);
                 break;
+
+            case PING:
+                ca = new Command(CmdTypes.PING);
+                ca.set("message", cmd.getStr("message"));
+                ca.set("integer", cmd.getStr("integer"));
+                send(ca);
         }
 
         return stop;

@@ -1,6 +1,6 @@
 package ZwangIdentificationServer;
 
-import NetworkingClasses.ConnectionHandler;
+import Communication.ConnectionHandler;
 
 import java.io.IOException;
 import java.net.Socket;

@@ -1,0 +1,18 @@
+{
+  "name": "Thibo",
+  "pawnsPaths": [
+    "C:\\IdeaProjects\\Zugzwang\\src\\assets\\gameTest\\pawns\\pawn_0_Thibo_1012570586.json",
+    "C:\\IdeaProjects\\Zugzwang\\src\\assets\\gameTest\\pawns\\pawn_1_Thibo_1207140081.json",
+    "C:\\IdeaProjects\\Zugzwang\\src\\assets\\gameTest\\pawns\\pawn_2_Thibo_1510067370.json"
+  ],
+  "handPaths": [
+    "C:\\IdeaProjects\\Zugzwang\\src\\assets\\gameTest\\cards\\card_SMALL_RIVERS_Thibo_896681694.json",
+    "C:\\IdeaProjects\\Zugzwang\\src\\assets\\gameTest\\cards\\card_CONTACT_Thibo_627185331.json",
+    "C:\\IdeaProjects\\Zugzwang\\src\\assets\\gameTest\\cards\\card_CLOCK_MAKER_Thibo_226170135.json",
+    "C:\\IdeaProjects\\Zugzwang\\src\\assets\\gameTest\\cards\\card_ARCHER_Thibo_1321640594.json"
+  ],
+  "isPacman": true,
+  "isBowBandaged": false,
+  "ap": 4,
+  "rulesPath": "C:\\IdeaProjects\\Zugzwang\\src\\assets\\gameTest\\rules_basic.json"
+}

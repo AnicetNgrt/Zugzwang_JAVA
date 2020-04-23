@@ -1,6 +1,6 @@
 package ZwangGameServer;
 
-import NetworkingClasses.ConnectionHandler;
+import Communication.ConnectionHandler;
 
 import java.net.Socket;
 
