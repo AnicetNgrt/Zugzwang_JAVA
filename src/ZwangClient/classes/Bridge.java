@@ -2,7 +2,7 @@ package ZwangClient.classes;
 
 import Communication.Command;
 import Communication.Communicator;
-import ZwangClient.interfaces.GeneralLinker;
+import ZwangClient.interfaces.UiLinker;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -15,16 +15,16 @@ public class Bridge extends Communicator implements Runnable {
     private String name = "anonymous";
     private boolean inGame = false;
     private String lobbyId = null;
-    private GameLobby lobbyHandler;
-    private GeneralLinker[] extensions = {};
+    private GameLobbyHandler lobbyHandler;
+    private UiLinker[] uiLinkers = {};
 
     public Bridge(String host, int port) throws IOException {
         super(new Socket(host, port));
     }
 
-    public Bridge(String host, int port, GeneralLinker[] extensions) throws IOException {
+    public Bridge(String host, int port, UiLinker[] extensions) throws IOException {
         this(host, port);
-        this.extensions = extensions;
+        this.uiLinkers = extensions;
     }
 
     public void run() {
@@ -61,13 +61,13 @@ public class Bridge extends Communicator implements Runnable {
             case JOIN:
                 if (inGame) break;
                 inGame = true;
-                lobbyHandler = new GameLobby();
+                lobbyHandler = new GameLobbyHandler();
                 break;
 
             case PING:
                 String message = cmd.getStr("message");
                 int integer = cmd.getInt("integer");
-                for (GeneralLinker gl : extensions) gl.onPing(message, integer);
+                for (UiLinker ui : uiLinkers) ui.onPing(message, integer);
                 break;
         }
         return stop;

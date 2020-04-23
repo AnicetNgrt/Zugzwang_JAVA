@@ -14,9 +14,10 @@ public enum CmdTypes {
     PING("ping", false, 1, "message", "integer"),
 
     // GAME COMMANDS
+    STARTGAME("startgame", true, 0),
     KICKFROMGAME("kickfromgame", true, 1, "nameInGame"),
-    ADDPLAYER("addplayer", true, 1, "nameInGame"),
-    REMOVEPLAYER("removeplayer", true, 1, "nameInGame");
+    ADDPLAYER("addplayer", true, 1, "nameInGame", "isSpectator"),
+    REMOVEPLAYER("removeplayer", true, 1, "nameInGame", "isSpectator");
 
     private String name;
     private int strCount;

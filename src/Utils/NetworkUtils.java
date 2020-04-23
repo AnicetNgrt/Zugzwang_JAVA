@@ -1,9 +1,31 @@
-package ZwangGameServer;
+package Utils;
 
+import ZwangClient.classes.Bridge;
+import ZwangClient.classes.TextUiHandler;
+import ZwangClient.interfaces.UiLinker;
+import ZwangGameServer.ZGSConnectionHandler;
+
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Random;
 
-public class Utils {
+public class NetworkUtils {
+
+    public static void startServer(String host, int port) {
+        ZGSConnectionHandler ch = new ZGSConnectionHandler(host, port);
+        ch.open();
+    }
+
+    public static void startClient(String host, int port) {
+        try {
+            UiLinker[] uiLinkers = {new TextUiHandler()};
+            Thread clientThread = new Thread(new Bridge(host, port, uiLinkers));
+            clientThread.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static String getAlphaNumericString(int n) {
 
         // length is bounded by 256 Character

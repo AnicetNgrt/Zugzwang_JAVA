@@ -3,6 +3,7 @@ package ZwangGameServer;
 import Communication.CmdTypes;
 import Communication.Command;
 import Communication.Communicator;
+import Utils.NetworkUtils;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -67,6 +68,8 @@ public class ClientHandler extends Communicator implements Runnable {
         }
 
         Command ca;
+        ZGSGameLobby gl;
+
         switch (cmd.type) {
             case DISCONNECT:
                 System.err.println("arrêt volontaire de la connexion");
@@ -74,27 +77,25 @@ public class ClientHandler extends Communicator implements Runnable {
                 break;
 
             case HOST:
-                String lobbyId = Utils.getAlphaNumericString(6);
+                String lobbyId = NetworkUtils.getAlphaNumericString(6);
                 String gameName = cmd.getStr("gameName");
                 int mpc = cmd.getInt("maxPlayerCount");
                 int spc = cmd.getInt("spectatorsAllowed");
                 String psw = cmd.getStr("password");
-                GameLobby gl = new GameLobby(lobbyId, this, gameName, mpc, spc, psw);
+                gl = new ZGSGameLobby(lobbyId, this, gameName, mpc, spc, psw);
                 SharedData.lobbies.put(lobbyId, gl);
                 setGameAsJoined(lobbyId);
                 break;
 
             case JOIN:
                 lobbyId = cmd.getStr("gameId");
-                final ConcurrentHashMap<String, GameLobby> lobbies = SharedData.lobbies;
+                final ConcurrentHashMap<String, ZGSGameLobby> lobbies = SharedData.lobbies;
                 if (lobbies.containsKey(lobbyId)) {
                     boolean canJoin = lobbies.get(lobbyId).addPlayer(this);
                     if (canJoin) {
                         setGameAsJoined(lobbyId);
                     } else {
-                        ca = new Command(CmdTypes.ERROR);
-                        ca.set("reason", "can't join this game");
-                        send(ca);
+                        sendError("can't join this game");
                     }
                 } else {
                     sendRetry("can't find game with such id");
@@ -120,9 +121,33 @@ public class ClientHandler extends Communicator implements Runnable {
                 ca.set("message", cmd.getStr("message"));
                 ca.set("integer", cmd.getStr("integer"));
                 send(ca);
+
+            case STARTGAME:
+                if (!isInGame(true)) break;
+                if (!isLobbyOwner(true)) break;
+                gl = SharedData.lobbies.get(this.lobbyId);
+                gl.startGame();
+                break;
         }
 
         return stop;
+    }
+
+    private boolean isInGame(boolean warn) {
+        if (!inGame || this.lobbyId == null) {
+            if (warn) sendError("You are not in a game lobby");
+            return false;
+        }
+        return true;
+    }
+
+    private boolean isLobbyOwner(boolean warn) {
+        ZGSGameLobby gl = SharedData.lobbies.get(this.lobbyId);
+        if (!gl.isOwner(this)) {
+            if (warn) sendError("You are not the owner of your current lobby");
+            return false;
+        }
+        return true;
     }
 
     private void setGameAsJoined(String lobbyId) {
@@ -147,6 +172,12 @@ public class ClientHandler extends Communicator implements Runnable {
 
     public void sendRetry(String reason) {
         Command toSend = new Command(CmdTypes.RETRY);
+        toSend.set("reason", reason);
+        send(toSend);
+    }
+
+    public void sendError(String reason) {
+        Command toSend = new Command(CmdTypes.ERROR);
         toSend.set("reason", reason);
         send(toSend);
     }

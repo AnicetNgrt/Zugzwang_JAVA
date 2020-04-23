@@ -1,17 +1,20 @@
 package ZwangClient.classes;
 
-import ZwangClient.interfaces.GameLinker;
-import ZwangClient.interfaces.GeneralLinker;
+import Utils.TUI;
+import ZwangClient.interfaces.GameLobbyLinker;
+import ZwangClient.interfaces.UiLinker;
 
-public class TextUiHandler implements GeneralLinker, GameLinker {
+public class TextUiHandler implements UiLinker, GameLobbyLinker {
+
+    ZCGameLobby gl;
 
     @Override
-    public void onPlayerAdded(String pName) {
+    public void onPlayerAdded(String pName, boolean isSpec) {
 
     }
 
     @Override
-    public void onPlayerRemoved(String pName) {
+    public void onPlayerRemoved(String pName, boolean isSpec) {
 
     }
 
@@ -32,33 +35,38 @@ public class TextUiHandler implements GeneralLinker, GameLinker {
 
     @Override
     public void onConnectionConfirm() {
-
+        TUI.println("You just connected to the ZWANG server");
     }
 
     @Override
     public void onRetry(String reason) {
-
+        TUI.println("WARNING server asks to retry: " + reason);
     }
 
     @Override
     public void onError(String reason) {
-
+        TUI.println("ERROR from server: " + reason);
     }
 
     @Override
     public void onJoinConfirmed(String gameId) {
-        System.out.println("You just joined a lobby");
+        TUI.println("You just joined a lobby");
     }
 
     @Override
     public void onReceiveLobbyData(String lobbyName, int maxPlayerCount, int spectatorsAllowed, int playerCount, int spectatorCount) {
-        System.out.print("Currently in lobby " + lobbyName + "\n");
-        System.out.print("p: " + playerCount + "/" + maxPlayerCount + "\n");
-        System.out.println("s: " + spectatorCount + "/" + spectatorsAllowed);
+        TUI.print("Currently in lobby " + lobbyName + "\n");
+        TUI.print("p: " + playerCount + "/" + maxPlayerCount + "\n");
+        TUI.println("s: " + spectatorCount + "/" + spectatorsAllowed);
+    }
+
+    @Override
+    public void onStartGame() {
+
     }
 
     @Override
     public void onPing(String message, int integer) {
-        System.out.println("Poke received: " + message + " " + integer);
+        TUI.println("Poke received: " + message + " " + integer);
     }
 }

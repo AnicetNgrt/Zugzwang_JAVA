@@ -1,6 +1,7 @@
 package ZwangClient.interfaces;
 
-public interface GeneralLinker {
+public interface UiLinker {
+
     void onDisconnect();
 
     void onNameConfirmed(String name);
