@@ -4,9 +4,7 @@ import Communication.Command;
 import Communication.Communicator;
 import ZwangClient.interfaces.UiLinker;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.Socket;
 
 public class Bridge extends Communicator implements Runnable {
@@ -28,29 +26,18 @@ public class Bridge extends Communicator implements Runnable {
     }
 
     public void run() {
-        boolean running = true;
-        while (running) {
-            try {
-                setWriter(new PrintWriter(getSock().getOutputStream(), true));
-                setReader(new BufferedInputStream(getSock().getInputStream()));
-                Command cmd = read();
-                System.out.println("\t * Réponse reçue " + cmd);
-
-                running = handleCommand(cmd);
-
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
+        boolean stop = false;
+        while (!stop) {
+            Command cmd = read();
+            stop = handleCommand(cmd);
         }
-        try {
-            closeConnection();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        closeConnection();
     }
 
     private boolean handleCommand(Command cmd) {
+        if (cmd == null) return false;
         boolean stop = false;
+        Command ca;
         switch (cmd.type) {
             case DISCONNECT:
                 stop = true;
@@ -69,6 +56,9 @@ public class Bridge extends Communicator implements Runnable {
                 int integer = cmd.getInt("integer");
                 for (UiLinker ui : uiLinkers) ui.onPing(message, integer);
                 break;
+
+            case CONNECTIONCONFIRM:
+                for (UiLinker ui : uiLinkers) ui.onConnectionConfirm(this);
         }
         return stop;
     }

@@ -5,12 +5,8 @@ import Communication.Command;
 import Communication.Communicator;
 import Utils.NetworkUtils;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.SocketException;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ClientHandler extends Communicator implements Runnable {
@@ -31,29 +27,24 @@ public class ClientHandler extends Communicator implements Runnable {
     public void run() {
         System.err.println("Lancement du traitement de la connexion cliente");
 
+        Command ca = new Command(CmdTypes.CONNECTIONCONFIRM);
+        send(ca);
+
         while (!getSock().isClosed()) {
+            Command cmd = read();
+            if (cmd == null) break;
 
-            try {
-                setWriter(new PrintWriter(getSock().getOutputStream()));
-                setReader(new BufferedInputStream(getSock().getInputStream()));
+            remote = (InetSocketAddress) getSock().getRemoteSocketAddress();
 
-                Command cmd = read();
-                remote = (InetSocketAddress) getSock().getRemoteSocketAddress();
+            System.err.println("\n" + debugStr(cmd));
+            boolean stop = handleCommand(cmd);
 
-                System.err.println("\n" + debugStr(cmd));
-                boolean stop = handleCommand(cmd);
-
-                if (stop) {
-                    closeConnection();
-                    break;
-                }
-            } catch (SocketException e) {
-                System.err.println("LA CONNEXION A ETE INTERROMPUE ! ");
+            if (stop) {
+                closeConnection();
                 break;
-            } catch (IOException e) {
-                e.printStackTrace();
             }
         }
+
         inGame = false;
         lobbyId = null;
         SharedData.users.remove(id);
@@ -63,8 +54,10 @@ public class ClientHandler extends Communicator implements Runnable {
         boolean stop = false;
         if (cmd.isNull()) {
             sendRetry("wrong format");
+            return false;
         } else if (cmd.isMissing()) {
             sendRetry("missing argument");
+            return false;
         }
 
         Command ca;
@@ -73,6 +66,11 @@ public class ClientHandler extends Communicator implements Runnable {
         switch (cmd.type) {
             case DISCONNECT:
                 System.err.println("arrêt volontaire de la connexion");
+                if (inGame) {
+                    gl = SharedData.lobbies.get(this.lobbyId);
+                    gl.kickPlayer(this);
+                }
+                send(cmd);
                 stop = true;
                 break;
 
@@ -117,10 +115,9 @@ public class ClientHandler extends Communicator implements Runnable {
                 break;
 
             case PING:
-                ca = new Command(CmdTypes.PING);
-                ca.set("message", cmd.getStr("message"));
-                ca.set("integer", cmd.getStr("integer"));
-                send(ca);
+                send(cmd);
+                System.err.println(stop);
+                break;
 
             case STARTGAME:
                 if (!isInGame(true)) break;

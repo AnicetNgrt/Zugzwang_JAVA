@@ -23,6 +23,7 @@ public class Command {
 
     public static Command fromJson(String json) {
         Gson gson = new Gson();
+        if (json.trim().length() < 2) return null;
         return gson.fromJson(json, Command.class);
     }
 
@@ -60,7 +61,8 @@ public class Command {
 
     public String toJson() {
         Gson gson = new Gson();
-        return gson.toJson(this);
+        String json = gson.toJson(this);
+        return json;
     }
 
     @Override

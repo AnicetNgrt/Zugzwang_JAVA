@@ -21,9 +21,9 @@ public class ConnectionHandler {
 
     public ConnectionHandler(String pHost, int pPort) {
         host = pHost;
-        port = pPort;
         try {
-            server = new ServerSocket(port, 100, InetAddress.getByName(host));
+            server = new ServerSocket(pPort, 100, InetAddress.getByName(host));
+            port = server.getLocalPort();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -64,5 +64,9 @@ public class ConnectionHandler {
 
     public void close() {
         isRunning = false;
+    }
+
+    public int port() {
+        return port;
     }
 }

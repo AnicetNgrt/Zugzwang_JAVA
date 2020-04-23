@@ -7,6 +7,20 @@ import ZwangClient.interfaces.UiLinker;
 public class TextUiHandler implements UiLinker, GameLobbyLinker {
 
     ZCGameLobby gl;
+    Bridge bridge = null;
+
+    public TextUiHandler() {
+        TUI.println("Attempting connection ...");
+    }
+
+    void mainMenu() {
+        if (bridge == null) return;
+
+        String out = "-----MENU-----\n";
+        out += "1 - host\n";
+        out += "2 - join\n";
+        TUI.choiceList(out, "1", "2");
+    }
 
     @Override
     public void onPlayerAdded(String pName, boolean isSpec) {
@@ -34,8 +48,9 @@ public class TextUiHandler implements UiLinker, GameLobbyLinker {
     }
 
     @Override
-    public void onConnectionConfirm() {
-        TUI.println("You just connected to the ZWANG server");
+    public void onConnectionConfirm(Bridge bridge) {
+        TUI.println("You just connected to the ZWANG server !");
+        this.bridge = bridge;
     }
 
     @Override

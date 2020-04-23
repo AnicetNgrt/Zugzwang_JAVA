@@ -16,11 +16,11 @@ public class App {
 		String out;
 		String in;
 		String host = "127.0.0.1";
-		int port = 2808;
+		int port = 0;
 
 		out = "-----ZWANG-----\n";
-		out += "1 - Be a server";
-		out += "2 - Be a client";
+		out += "1 - Be a server\n";
+		out += "2 - Be a client\n";
 		out += "3 - Be both\n";
 		in = TUI.choiceList(out, "1", "2", "3");
 		switch (in) {
@@ -28,11 +28,11 @@ public class App {
 				NetworkUtils.startServer(host, port);
 				break;
 			case "2":
-				NetworkUtils.startServer(host, port);
+				NetworkUtils.startClient(host, port);
 				break;
 			case "3":
-				NetworkUtils.startServer(host, port);
-				NetworkUtils.startServer(host, port);
+				port = NetworkUtils.startServer(host, port);
+				NetworkUtils.startClient(host, port);
 				break;
 		}
 	}

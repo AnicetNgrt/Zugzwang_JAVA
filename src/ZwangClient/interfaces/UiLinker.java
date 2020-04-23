@@ -1,5 +1,7 @@
 package ZwangClient.interfaces;
 
+import ZwangClient.classes.Bridge;
+
 public interface UiLinker {
 
     void onDisconnect();
@@ -8,7 +10,7 @@ public interface UiLinker {
 
     void onHostConfirm(String gameId);
 
-    void onConnectionConfirm();
+    void onConnectionConfirm(Bridge bridge);
 
     void onRetry(String reason);
 

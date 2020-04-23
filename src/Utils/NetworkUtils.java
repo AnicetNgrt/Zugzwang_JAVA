@@ -11,9 +11,10 @@ import java.util.Random;
 
 public class NetworkUtils {
 
-    public static void startServer(String host, int port) {
+    public static int startServer(String host, int port) {
         ZGSConnectionHandler ch = new ZGSConnectionHandler(host, port);
         ch.open();
+        return ch.port();
     }
 
     public static void startClient(String host, int port) {

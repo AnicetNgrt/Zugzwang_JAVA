@@ -1,10 +1,11 @@
 package ZwangGameServer;
 
+import Communication.ConnectionHandler;
 import Utils.NetworkUtils;
 
 import java.net.Socket;
 
-public class ZGSConnectionHandler extends Communication.ConnectionHandler {
+public class ZGSConnectionHandler extends ConnectionHandler {
 
     public ZGSConnectionHandler() {
         super();
@@ -16,7 +17,7 @@ public class ZGSConnectionHandler extends Communication.ConnectionHandler {
 
     @Override
     public void handle(Socket sock) {
-        System.out.println("Connexion cliente reçue.");
+        System.err.println("Connexion cliente reçue");
         String clientId = NetworkUtils.getAlphaNumericString(6);
         ClientHandler client = new ClientHandler(sock, clientId);
         SharedData.users.put(clientId, client);
