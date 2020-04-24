@@ -16,7 +16,7 @@ public class App {
 		String out;
 		String in;
 		String host = "127.0.0.1";
-		int port = 0;
+		int port = 50257;
 
 		out = "-----ZWANG-----\n";
 		out += "1 - Be a server\n";

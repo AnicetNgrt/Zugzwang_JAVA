@@ -3,22 +3,15 @@ package ZwangClient.classes;
 import ZwangCore.Classes.Game;
 import ZwangCore.Classes.Rules;
 
-import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ZCGameLobby {
-    protected Rules rules = new Rules();
-    protected ArrayList<String> pNames;
-    protected boolean isGameStarted = false;
-    protected Game game = null;
+    protected volatile Rules rules = new Rules();
+    protected volatile CopyOnWriteArrayList<String> pNames = new CopyOnWriteArrayList<>();
+    protected volatile CopyOnWriteArrayList<String> specNames = new CopyOnWriteArrayList<>();
+    protected volatile boolean isGameStarted = false;
+    protected volatile Game game = null;
 
     ZCGameLobby() {
-    }
-
-    ArrayList<String> getNames() {
-        return new ArrayList<>(pNames);
-    }
-
-    boolean isGameStarted() {
-        return isGameStarted;
     }
 }

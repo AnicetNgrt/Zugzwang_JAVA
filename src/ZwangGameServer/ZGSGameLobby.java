@@ -47,7 +47,19 @@ public class ZGSGameLobby {
         return true;
     }
 
-    void kickPlayer(ClientHandler c) {
+    ClientHandler findByName(String nameInGame) {
+        for (ClientHandler ch : clients) {
+            if (nameInGame.equals(ch.getNameInLobby())) {
+                return ch;
+            }
+        }
+        return null;
+    }
+
+    void kickPlayer(String nameInGame) {
+        ClientHandler c = findByName(nameInGame);
+        if (c == null) return;
+
         Command ca = new Command(CmdTypes.REMOVEPLAYER);
         ca.set("playerName", c.getName());
         ca.set("playerId", c.getId());
@@ -114,5 +126,22 @@ public class ZGSGameLobby {
 
     boolean isGameStarted() {
         return isGameStarted;
+    }
+
+    public void sendData(ClientHandler ch, Boolean partOfList) {
+        Command ca = new Command(CmdTypes.RECEIVELOBBYDATA);
+        ca.set("gameId", id);
+        ca.set("gameName", name);
+        ca.set("hasPassword", password.length() != 0 ? 1 : 0);
+        ca.set("partOfList", partOfList ? 1 : 0);
+        ca.set("maxPlayerCount", maxPlayerCount);
+        ca.set("spectatorsAllowed", spectatorsAllowed);
+        ca.set("playerCount", playerCount());
+        ca.set("spectatorsCount", spectatorCount());
+        ch.send(ca);
+    }
+
+    public String getId() {
+        return id;
     }
 }

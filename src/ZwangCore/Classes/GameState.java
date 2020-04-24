@@ -12,16 +12,16 @@ public class GameState {
 
     private Rules rules;
     private ArrayList<Player> players;
-    private ArrayList<ModifierEmbed>[] planned;
+    private ArrayList<ArrayList<ModifierEmbed>> planned;
     private Board board;
     private int clock;
 
     GameState(ArrayList<Player> players, Rules rules, Board board) {
         clock = 0;
         this.players = players;
-        planned = new ArrayList[rules.maxClock()];
-        for (int i = 0; i < rules.maxClock(); i++) {
-            planned[i] = new ArrayList<>();
+        planned = new ArrayList<>();
+        for (int i = 0; i < rules.maxClock; i++) {
+            planned.add(new ArrayList<>());
         }
         this.board = board;
         this.rules = rules;
@@ -29,24 +29,20 @@ public class GameState {
 
 	GameState(GameState g) {
         this(new ArrayList<>(), g.rules, new Board(g.board));
-        for (Player p : g.players) {
-            players.add(new Player(p));
-        }
-        int i = 0;
+        players = new ArrayList<>(g.players);
+        planned = new ArrayList<>();
         for (ArrayList<ModifierEmbed> ml : g.planned) {
-            for (ModifierEmbed mtk : ml) {
-                planned[i].add(mtk);
-            }
-            i++;
+            planned.add(new ArrayList<>(ml));
         }
-		clock = g.clock;
-		board = new Board(g.board);
-	}
+        clock = g.clock;
+        board = new Board(g.board);
+    }
 
 	public static GameState fromJson(String jsonPath) {
         JsonGameState gsj = (JsonGameState) JsonUtils.readJson(jsonPath, JsonGameState.class);
 
         ArrayList<Player> players = new ArrayList<>();
+        assert gsj != null;
         for (String path : gsj.playersPaths)
             players.add(Player.fromJson(path));
 
@@ -55,7 +51,7 @@ public class GameState {
         int i = 0;
         for (String[] ls : gsj.plannedPaths) {
             for (String path : ls) {
-                gs.planned[i].add(ModifierEmbed.fromJson(path));
+                gs.planned.get(i).add(ModifierEmbed.fromJson(path));
             }
             i++;
         }
@@ -79,7 +75,7 @@ public class GameState {
     void addToClock(int time) {
         int prevTurn = clock % 4;
         for (int c = clock + 1; c <= clock + time; c++) {
-            for (ModifierEmbed mtk : planned[c]) {
+            for (ModifierEmbed mtk : planned.get(c)) {
                 mtk.execute(this);
             }
         }
@@ -100,12 +96,12 @@ public class GameState {
     }
 
     public void addPlanned(ModifierEmbed mtk, int clock) {
-        planned[clock].add(mtk);
+        planned.get(clock).add(mtk);
     }
 
 	void tryRemovePlanned(ModifierEmbed mtk, int clock) {
-		planned[clock].remove(mtk);
-	}
+        planned.get(clock).remove(mtk);
+    }
 
 	public void tryRemovePlannedUntil(ModifierEmbed mtk, int maxClock) {
         for (int c = clock; c <= maxClock; c++) {
@@ -157,11 +153,11 @@ public class GameState {
         jgs.boardPath = board.toJson(pathes);
         jgs.clock = clock;
         jgs.rulesPath = pathes.get("Rules");
-        jgs.plannedPaths = new String[rules.maxClock()][];
-        for (int i = 0; i < rules.maxClock(); i++) {
-            jgs.plannedPaths[i] = new String[planned[i].size()];
+        jgs.plannedPaths = new String[rules.maxClock][];
+        for (int i = 0; i < rules.maxClock; i++) {
+            jgs.plannedPaths[i] = new String[planned.get(i).size()];
             int j = 0;
-            for (ModifierEmbed mtk : planned[i]) {
+            for (ModifierEmbed mtk : planned.get(i)) {
                 jgs.plannedPaths[i][j++] = mtk.toJson(pathes);
             }
         }

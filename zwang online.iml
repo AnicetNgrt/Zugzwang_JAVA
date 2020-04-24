@@ -23,16 +23,6 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="library" name="json-simple-3.1.1" level="project" />
-    <orderEntry type="library" name="dozer-5.5.1" level="project" />
-    <orderEntry type="library" name="commons-lang3-3.2.1" level="project" />
-    <orderEntry type="library" name="commons-collections-3.2.1" level="project" />
-    <orderEntry type="library" name="jcl-over-slf4j-1.7.5" level="project" />
-    <orderEntry type="library" name="slf4j-api-1.7.5" level="project" />
-    <orderEntry type="library" name="commons-beanutils-1.9.1" level="project" />
-    <orderEntry type="library" name="slf4j-simple-1.6.1" level="project" />
     <orderEntry type="library" name="gson-2.8.6" level="project" />
-    <orderEntry type="library" name="gwt-user" level="project" />
-    <orderEntry type="library" name="javafx" level="project" />
   </component>
 </module>

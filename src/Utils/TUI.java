@@ -37,7 +37,7 @@ public class TUI {
             return null;
         }
         String name = parts[0];
-        String[] args = parts.length > 1 ? Arrays.copyOfRange(parts, 1, parts.length - 1) : new String[0];
+        String[] args = parts.length > 1 ? Arrays.copyOfRange(parts, 1, parts.length) : new String[0];
         CmdTypes type = CmdTypes.nameToType(name);
         if (type == null) {
             println("Unknown command");
@@ -45,14 +45,14 @@ public class TUI {
         }
         Command cmd = new Command(type);
         for (int i = 0; i < type.getStrCount(); i++) {
-            if (i > args.length - 1) {
+            if (i >= args.length) {
                 println("Missing string args");
                 return null;
             }
             cmd.set(type.getParams()[i], args[i]);
         }
         for (int i = type.getStrCount(); i < type.getParamsCount(); i++) {
-            if (i > args.length - 1) {
+            if (i >= args.length) {
                 println("Missing int args");
                 return null;
             }

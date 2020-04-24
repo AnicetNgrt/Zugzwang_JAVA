@@ -17,12 +17,11 @@ public class NetworkUtils {
         return ch.port();
     }
 
-    public static void startClient(String host, int port) {
+    public static void startClient(String host, int port, UiLinker... uil) {
         try {
             TextUiHandler tuih = new TextUiHandler();
             Thread inputThread = new Thread(tuih);
-            UiLinker[] uiLinkers = {tuih};
-            Thread clientThread = new Thread(new ClientBridge(host, port, uiLinkers));
+            Thread clientThread = new Thread(new ClientBridge(host, port, uil));
             inputThread.start();
             clientThread.start();
         } catch (IOException e) {
@@ -43,7 +42,7 @@ public class NetworkUtils {
         String randomString = new String(array, StandardCharsets.UTF_8);
 
         // Create a StringBuffer to store the result
-        StringBuffer r = new StringBuffer();
+        StringBuilder r = new StringBuilder();
 
         // Append first 20 alphanumeric characters
         // from the generated random String into the result

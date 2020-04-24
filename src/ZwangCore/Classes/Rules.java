@@ -1,84 +1,51 @@
 package ZwangCore.Classes;
 
 import Utils.JsonUtils;
-import com.github.cliftonlabs.json_simple.JsonObject;
-import com.github.cliftonlabs.json_simple.Jsonable;
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.util.HashMap;
 
-public class Rules implements Jsonable {
+public class Rules {
 
-	public String name;
-	public int maxWeight;
-	public int maxAp;
-	public int maxClock;
-	public int maxPawn;
-	public int startPawn;
-	public String boardSize;
-	public boolean canDuplicateCard;
-	public int playerCount;
+    public String name;
+    public int maxWeight = 10;
+    public int maxAp = 4;
+    public int maxClock = 21;
+    public int maxPawn = 4;
+    public int startPawn = 3;
+    public String boardSize = "STANDARD";
+    public boolean canDuplicateCard = false;
+    public int playerCount = 2;
 
-	public Rules(String name) {
-		this.name = name;
-		playerCount = 2;
-		maxWeight = 10;
-		maxAp = 4;
-		maxClock = 21;
-		maxPawn = 4;
-		startPawn = 3;
-		boardSize = "STANDARD";
-		canDuplicateCard = false;
-	}
+    public Rules(String name) {
+        this.name = name;
+    }
 
-	public Rules() {
-		this("noName");
-	}
+    public Rules() {
+        this("noName");
+    }
 
-	public static Rules fromJson(String jsonPath) {
-		return (Rules) JsonUtils.readJson(jsonPath, Rules.class);
-	}
+    public static Rules fromJson(String jsonPath) {
+        return (Rules) JsonUtils.readJson(jsonPath, Rules.class);
+    }
 
-	public int startPawn() {
-		return startPawn;
-	}
+    public String toJson(HashMap<String, String> pathes) {
+        String path = pathes.get("Rules");
 
-	public String toJson(HashMap<String, String> pathes) {
-		String path = pathes.get("Rules");
+        JsonUtils.writeJson(path, this);
+        return path;
+    }
 
-		JsonUtils.writeJson(path, this);
-		return path;
-	}
+    public String toString() {
+        String ret = "name: " + name;
+        ret += "\nboard size: " + boardSize;
+        ret += "\nplayer count: " + playerCount;
+        ret += "\nstart pawn count: " + startPawn;
+        ret += "\nmax pawn count: " + maxPawn;
+        ret += "\naction point: " + maxAp + " per turn";
+        ret += "\nmax hand weight: " + maxWeight;
+        ret += "\nhaving the same card twice: " + (canDuplicateCard ? "permitted" : "prohibited");
+        ret += "\ngame max duration: " + (maxClock / maxAp) + " turns\n";
+        return ret;
+    }
 
-	@Override
-	public String toJson() {
-		final StringWriter writable = new StringWriter();
-		try {
-			this.toJson(writable);
-		} catch (final IOException e) {
-			e.printStackTrace();
-		}
-		return writable.toString();
-	}
-
-	@Override
-	public void toJson(Writer writer) throws IOException {
-		final JsonObject json = new JsonObject();
-		json.put("name", name);
-		json.put("playerCount", playerCount);
-		json.put("maxWeight", maxWeight);
-		json.put("maxAp", maxAp);
-		json.put("maxClock", maxClock);
-		json.put("startPawn", startPawn);
-		json.put("maxPawn", maxPawn);
-		json.put("boardSize", boardSize);
-		json.put("canDuplicateCard", canDuplicateCard);
-		json.toJson(writer);
-	}
-
-	public int maxClock() {
-		return maxClock;
-	}
 }

@@ -3,6 +3,8 @@ package ZwangClient.classes;
 import ZwangClient.interfaces.GameLobbyLinker;
 import ZwangCore.Classes.Game;
 
+import java.util.ArrayList;
+
 public class GameLobbyHandler extends ZCGameLobby implements GameLobbyLinker {
 
     public GameLobbyHandler() {
@@ -12,6 +14,7 @@ public class GameLobbyHandler extends ZCGameLobby implements GameLobbyLinker {
     @Override
     public void onPlayerAdded(String pName, boolean isSpec) {
         if (!isSpec) pNames.add(pName);
+        else specNames.add(pName);
     }
 
     @Override
@@ -21,6 +24,8 @@ public class GameLobbyHandler extends ZCGameLobby implements GameLobbyLinker {
             if (isGameStarted) {
                 game.disqualify(pName);
             }
+        } else {
+            specNames.remove(pName);
         }
     }
 
@@ -33,7 +38,7 @@ public class GameLobbyHandler extends ZCGameLobby implements GameLobbyLinker {
     @Override
     public void onGameStarted() {
         isGameStarted = true;
-        game = new Game(pNames, rules);
+        game = new Game(new ArrayList<>(pNames), rules);
     }
 
 }

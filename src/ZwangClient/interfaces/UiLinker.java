@@ -1,6 +1,7 @@
 package ZwangClient.interfaces;
 
 import Communication.Command;
+import ZwangClient.classes.ZCGameLobby;
 
 public interface UiLinker extends GameLobbyLinker {
 
@@ -16,11 +17,13 @@ public interface UiLinker extends GameLobbyLinker {
 
     void onError(String reason);
 
-    void onJoinConfirmed(String gameId);
+    void onJoinConfirmed(String gameId, ZCGameLobby gameLobby);
 
     void onLobbyDataReceived(String lobbyId, String lobbyName, boolean hasPassword, boolean inList, int maxPlayerCount, int spectatorsAllowed, int playerCount, int spectatorCount);
 
     void onPing(String message, int integer);
 
     Command lastPending();
+
+    void onIdReceived(String id);
 }
