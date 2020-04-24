@@ -1,6 +1,6 @@
 package Utils;
 
-import ZwangClient.classes.Bridge;
+import ZwangClient.classes.ClientBridge;
 import ZwangClient.classes.TextUiHandler;
 import ZwangClient.interfaces.UiLinker;
 import ZwangGameServer.ZGSConnectionHandler;
@@ -19,12 +19,19 @@ public class NetworkUtils {
 
     public static void startClient(String host, int port) {
         try {
-            UiLinker[] uiLinkers = {new TextUiHandler()};
-            Thread clientThread = new Thread(new Bridge(host, port, uiLinkers));
+            TextUiHandler tuih = new TextUiHandler();
+            Thread inputThread = new Thread(tuih);
+            UiLinker[] uiLinkers = {tuih};
+            Thread clientThread = new Thread(new ClientBridge(host, port, uiLinkers));
+            inputThread.start();
             clientThread.start();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static boolean intToBool(int i) {
+        return i > 0;
     }
 
     public static String getAlphaNumericString(int n) {

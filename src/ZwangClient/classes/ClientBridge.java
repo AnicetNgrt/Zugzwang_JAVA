@@ -2,12 +2,13 @@ package ZwangClient.classes;
 
 import Communication.Command;
 import Communication.Communicator;
+import Utils.NetworkUtils;
 import ZwangClient.interfaces.UiLinker;
 
 import java.io.IOException;
 import java.net.Socket;
 
-public class Bridge extends Communicator implements Runnable {
+public class ClientBridge extends Communicator implements Runnable {
 
     private String id;
     private String name = "anonymous";
@@ -16,11 +17,11 @@ public class Bridge extends Communicator implements Runnable {
     private GameLobbyHandler lobbyHandler;
     private UiLinker[] uiLinkers = {};
 
-    public Bridge(String host, int port) throws IOException {
+    public ClientBridge(String host, int port) throws IOException {
         super(new Socket(host, port));
     }
 
-    public Bridge(String host, int port, UiLinker[] extensions) throws IOException {
+    public ClientBridge(String host, int port, UiLinker[] extensions) throws IOException {
         this(host, port);
         this.uiLinkers = extensions;
     }
@@ -30,6 +31,10 @@ public class Bridge extends Communicator implements Runnable {
         while (!stop) {
             Command cmd = read();
             stop = handleCommand(cmd);
+            for (UiLinker ui : uiLinkers) {
+                cmd = ui.lastPending();
+                if (cmd != null) send(cmd);
+            }
         }
         closeConnection();
     }
@@ -42,6 +47,9 @@ public class Bridge extends Communicator implements Runnable {
             case DISCONNECT:
                 stop = true;
                 inGame = false;
+                String name = cmd.getStr("name");
+                boolean isSpec = NetworkUtils.intToBool(cmd.getInt("isSpectator"));
+                for (UiLinker ui : uiLinkers) ui.onPlayerAdded(name, isSpec);
                 lobbyHandler = null;
                 break;
 
@@ -57,8 +65,11 @@ public class Bridge extends Communicator implements Runnable {
                 for (UiLinker ui : uiLinkers) ui.onPing(message, integer);
                 break;
 
+            case MYNAMEIS:
+                for (UiLinker ui : uiLinkers) ui.onNameConfirmed(cmd.getStr("name"));
+
             case CONNECTIONCONFIRM:
-                for (UiLinker ui : uiLinkers) ui.onConnectionConfirm(this);
+                for (UiLinker ui : uiLinkers) ui.onConnectionConfirmed();
         }
         return stop;
     }

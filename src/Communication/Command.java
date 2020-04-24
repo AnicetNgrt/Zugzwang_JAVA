@@ -40,8 +40,7 @@ public class Command {
         if (strParams.containsKey(key)) {
             String v = (String) value;
             strParams.replace(key, v);
-        }
-        if (intParams.containsKey(key)) {
+        } else if (intParams.containsKey(key)) {
             int v = (int) value;
             intParams.replace(key, v);
         }

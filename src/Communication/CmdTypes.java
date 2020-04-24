@@ -2,33 +2,33 @@ package Communication;
 
 public enum CmdTypes {
     // NON-GAME COMMANDS
-    CONNECTIONCONFIRM("connectconfirm", false, 0),
-    MYNAMEIS("myname", false, 1, "name"),
-    GIVEID("giveid", false, 1, "id"),
-    HOST("host", false, 2, "gameName", "password", "maxPlayerCount", "spectatorsAllowed"),
-    JOIN("join", false, 1, "gameId"),
-    RECEIVELOBBYDATA("receivelobbydata", false, 1, "gameName", "maxPlayerCount", "spectatorsAllowed", "playerCount", "spectatorCount"),
-    ERROR("error", false, 1, "reason"),
-    DISCONNECT("disconnect", false, 0),
-    RETRY("retry", false, 1, "reason"),
-    PING("ping", false, 1, "message", "integer"),
+    CONNECTIONCONFIRM("connectconfirm", 0),
+    MYNAMEIS("myname", 1, "name"),
+    GIVEID("giveid", 1, "id"),
+    HOST("host", 2, "gameName", "password", "maxPlayerCount", "spectatorsAllowed"),
+    JOIN("join", 1, "gameId"),
+    REQUESTLOBBIES("requestlobbies", 0, "count", "offset"),
+    GIVEMYLOBBYDATA("givemylobbydata", 0),
+    RECEIVELOBBYDATA("receivelobbydata", 1, "gameName", "partOfList", "maxPlayerCount", "spectatorsAllowed", "playerCount", "spectatorCount"),
+    ERROR("error", 1, "reason"),
+    DISCONNECT("disconnect", 0),
+    RETRY("retry", 1, "reason"),
+    PING("ping", 1, "message", "integer"),
 
     // GAME COMMANDS
-    STARTGAME("startgame", true, 0),
-    KICKFROMGAME("kickfromgame", true, 1, "nameInGame"),
-    ADDPLAYER("addplayer", true, 1, "nameInGame", "isSpectator"),
-    REMOVEPLAYER("removeplayer", true, 1, "nameInGame", "isSpectator");
+    STARTGAME("startgame", 0),
+    KICKFROMGAME("kickfromgame", 1, "nameInGame"),
+    ADDPLAYER("addplayer", 1, "nameInGame", "isSpectator"),
+    REMOVEPLAYER("removeplayer", 1, "nameInGame", "isSpectator");
 
-    private String name;
-    private int strCount;
-    private String[] params;
-    private boolean isGameCommand;
+    private final String name;
+    private final int strCount;
+    private final String[] params;
 
-    CmdTypes(String n, boolean isGameCommand, int sc, String... p) {
+    CmdTypes(String n, int sc, String... p) {
         name = n;
         strCount = sc;
         params = p;
-        this.isGameCommand = isGameCommand;
     }
 
     public String getName() {
@@ -39,12 +39,22 @@ public enum CmdTypes {
         return strCount;
     }
 
+    public static CmdTypes nameToType(String name) {
+        for (CmdTypes t : CmdTypes.values()) {
+            if (name.equals(t.name)) return t;
+        }
+        return null;
+    }
+
     public String[] getParams() {
-        return params;
+        String[] ret = new String[params.length];
+        for (int i = 0; i < params.length; i++) {
+            ret[i] = params[i];
+        }
+        return ret;
     }
 
-    public boolean isGameCommand() {
-        return isGameCommand;
+    public int getParamsCount() {
+        return params.length;
     }
-
 }

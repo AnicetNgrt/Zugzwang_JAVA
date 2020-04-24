@@ -5,7 +5,7 @@ public interface GameLobbyLinker {
 
     void onPlayerRemoved(String pName, boolean isSpec);
 
-    void onReceiveLobbyData(String lobbyName, int maxPlayerCount, int spectatorsAllowed, int playerCount, int spectatorCount);
+    void onLobbyDataReceived(String lobbyId, String lobbyName, boolean hasPassword, boolean inList, int maxPlayerCount, int spectatorsAllowed, int playerCount, int spectatorCount);
 
-    void onStartGame();
+    void onGameStarted();
 }

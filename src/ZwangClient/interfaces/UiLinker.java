@@ -1,16 +1,16 @@
 package ZwangClient.interfaces;
 
-import ZwangClient.classes.Bridge;
+import Communication.Command;
 
-public interface UiLinker {
+public interface UiLinker extends GameLobbyLinker {
 
-    void onDisconnect();
+    void onDisconnected();
 
     void onNameConfirmed(String name);
 
-    void onHostConfirm(String gameId);
+    void onHostConfirmed(String gameId);
 
-    void onConnectionConfirm(Bridge bridge);
+    void onConnectionConfirmed();
 
     void onRetry(String reason);
 
@@ -18,7 +18,9 @@ public interface UiLinker {
 
     void onJoinConfirmed(String gameId);
 
-    void onReceiveLobbyData(String lobbyName, int maxPlayerCount, int spectatorsAllowed, int playerCount, int spectatorCount);
+    void onLobbyDataReceived(String lobbyId, String lobbyName, boolean hasPassword, boolean inList, int maxPlayerCount, int spectatorsAllowed, int playerCount, int spectatorCount);
 
     void onPing(String message, int integer);
+
+    Command lastPending();
 }

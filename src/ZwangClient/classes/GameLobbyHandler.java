@@ -25,12 +25,13 @@ public class GameLobbyHandler extends ZCGameLobby implements GameLobbyLinker {
     }
 
     @Override
-    public void onReceiveLobbyData(String lobbyName, int maxPlayerCount, int spectatorsAllowed, int playerCount, int spectatorCount) {
+    public void onLobbyDataReceived(String lobbyId, String lobbyName, boolean hasPassword, boolean inList,
+                                    int maxPlayerCount, int spectatorsAllowed, int playerCount, int spectatorCount) {
         rules.playerCount = playerCount;
     }
 
     @Override
-    public void onStartGame() {
+    public void onGameStarted() {
         isGameStarted = true;
         game = new Game(pNames, rules);
     }
