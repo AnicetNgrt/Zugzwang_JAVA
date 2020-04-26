@@ -82,13 +82,17 @@ public class GameState {
         clock += time;
         int newTurn = clock % 4;
         if (prevTurn > newTurn) {
-            for (Player p : players)
-                p.turnReset();
+            newTurn();
         }
     }
 
-    int playerIndex() {
-        return (clock % 4) % players.size();
+    void newTurn() {
+        for (Player p : players)
+            p.turnReset();
+    }
+
+    public Player currentPlayerIndex() {
+        return players.get((clock % 4) % players.size());
     }
 
     Board board() {
@@ -169,4 +173,6 @@ public class GameState {
         JsonUtils.writeJson(path, jgs);
         return path;
     }
+
+
 }

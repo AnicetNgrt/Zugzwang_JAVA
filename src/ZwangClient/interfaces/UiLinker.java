@@ -26,4 +26,6 @@ public interface UiLinker extends GameLobbyLinker {
     Command lastPending();
 
     void onIdReceived(String id);
+
+    void onRequestLobbyPassword();
 }

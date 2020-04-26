@@ -19,13 +19,23 @@ public class ZGSGameLobby {
     volatile private boolean isGameStarted;
 
     ZGSGameLobby(String id, ClientHandler owner, String name, int maxPlayerCount, int spectatorsAllowed, String password) {
+        isGameStarted = false;
         this.password = password;
         this.id = id;
         clients = new CopyOnWriteArrayList<>();
-        clients.add(owner);
         this.name = name;
         this.maxPlayerCount = Math.max(2, maxPlayerCount);
         this.spectatorsAllowed = Math.max(0, spectatorsAllowed);
+        addPlayer(owner);
+    }
+
+    void sendAllPlayers(ClientHandler ch) {
+        for (ClientHandler c : clients) {
+            Command ca = new Command(CmdTypes.ADDPLAYER);
+            ca.set("nameInGame", c.getNameInLobby());
+            ca.set("isSpectator", isSpectator(clients.indexOf(c)) ? 1 : 0);
+            ch.send(ca);
+        }
     }
 
     boolean addPlayer(ClientHandler newc) {
@@ -37,12 +47,15 @@ public class ZGSGameLobby {
 
         Command ca1 = new Command(CmdTypes.ADDPLAYER);
         ca1.set("nameInGame", newc.getNameInLobby());
+        ca1.set("isSpectator", isSpectator(clients.size()) ? 1 : 0);
+
         for (ClientHandler ch : clients) {
             ch.send(ca1);
             Command ca2 = new Command(CmdTypes.ADDPLAYER);
             ca2.set("nameInGame", ch.getNameInLobby());
             newc.send(ca2);
         }
+
         clients.add(newc);
         return true;
     }
@@ -116,8 +129,8 @@ public class ZGSGameLobby {
         return clients.contains(c);
     }
 
-    boolean isSpectator(ClientHandler c) {
-        return clients.indexOf(c) >= maxPlayerCount;
+    boolean isSpectator(int index) {
+        return index >= maxPlayerCount;
     }
 
     boolean isOwner(ClientHandler c) {
@@ -137,7 +150,7 @@ public class ZGSGameLobby {
         ca.set("maxPlayerCount", maxPlayerCount);
         ca.set("spectatorsAllowed", spectatorsAllowed);
         ca.set("playerCount", playerCount());
-        ca.set("spectatorsCount", spectatorCount());
+        ca.set("spectatorCount", spectatorCount());
         ch.send(ca);
     }
 

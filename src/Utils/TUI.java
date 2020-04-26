@@ -56,7 +56,12 @@ public class TUI {
                 println("Missing int args");
                 return null;
             }
-            cmd.set(type.getParams()[i], args[i]);
+            try {
+                cmd.set(type.getParams()[i], Integer.parseInt(args[i]));
+            } catch (NumberFormatException e) {
+                println("Parameter " + type.getParams()[i] + " must be a number");
+                return null;
+            }
         }
         return cmd;
     }

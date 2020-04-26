@@ -5,18 +5,18 @@ import Communication.Command;
 import Utils.TUI;
 import ZwangClient.interfaces.UiLinker;
 
-import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class TextUiHandler implements UiLinker, Runnable {
 
-    private volatile SynchronousQueue<Command> pending;
+    private volatile ConcurrentLinkedQueue<Command> pending;
     private volatile int expectedLobbyCount = 0;
     private volatile int lobbyReceived = 0;
     private volatile ZCGameLobby gameLobby = null;
     private volatile boolean stop = false;
 
     public TextUiHandler() {
-        pending = new SynchronousQueue<>();
+        pending = new ConcurrentLinkedQueue<>();
         TUI.println("Attempting connection ...");
     }
 
@@ -30,12 +30,8 @@ public class TextUiHandler implements UiLinker, Runnable {
                 if (!isOfflineCmd) {
                     cmd = TUI.promptCmd(line);
                     handleOnlineCommands(cmd);
+                    pending.add(cmd);
                 }
-            }
-            try {
-                pending.put(cmd);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
             }
         }
     }
@@ -95,7 +91,7 @@ public class TextUiHandler implements UiLinker, Runnable {
 
     @Override
     public void onPlayerAdded(String pName, boolean isSpec) {
-
+        TUI.println("server: A " + (isSpec ? "spectator" : "player") + " joined your lobby: " + pName);
     }
 
     @Override
@@ -169,16 +165,16 @@ public class TextUiHandler implements UiLinker, Runnable {
 
     @Override
     public Command lastPending() {
-        try {
-            return pending.take();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            return null;
-        }
+        return pending.poll();
     }
 
     @Override
     public void onIdReceived(String id) {
         TUI.println("server: Your id is: " + id);
+    }
+
+    @Override
+    public void onRequestLobbyPassword() {
+        TUI.println("server: This lobby requires a password.\npassword: ");
     }
 }

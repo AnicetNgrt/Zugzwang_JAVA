@@ -7,11 +7,10 @@ public enum CmdTypes {
     GIVEID("giveid", 0),
     RECEIVEID("receiveid", 1, "id"),
     HOST("host", 2, "gameName", "password", "maxPlayerCount", "spectatorsAllowed"),
-    JOIN("join", 2, "gameId"),
+    JOIN("join", 1, "gameId"),
     REQUESTLOBBYPASSWORD("requestlobbypassword", 0),
     GIVELOBBYPASSWORD("givelobbypassword", 1, "password"),
     REQUESTLOBBIES("requestlobbies", 0, "count", "offset"),
-    GIVEMYLOBBYDATA("givemylobbydata", 0),
     RECEIVELOBBYDATA("receivelobbydata", 2, "gameId", "gameName", "hasPassword", "partOfList", "maxPlayerCount", "spectatorsAllowed", "playerCount", "spectatorCount"),
     ERROR("error", 1, "reason"),
     DISCONNECT("disconnect", 0),
@@ -19,6 +18,8 @@ public enum CmdTypes {
     PING("ping", 1, "message", "integer"),
 
     // LOBBY COMMANDS
+    GIVEMYLOBBYDATA("givemylobbydata", 0),
+    SENDALLPLAYERS("sendallplayers", 0),
     STARTGAME("startgame", 0),
     KICKFROMLOBBY("kickfromlobby", 1, "nameInGame"),
     ADDPLAYER("addplayer", 1, "nameInGame", "isSpectator"),

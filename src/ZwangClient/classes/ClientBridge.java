@@ -1,5 +1,6 @@
 package ZwangClient.classes;
 
+import Communication.CmdTypes;
 import Communication.Command;
 import Communication.Communicator;
 import Utils.NetworkUtils;
@@ -7,6 +8,7 @@ import ZwangClient.interfaces.UiLinker;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.util.LinkedList;
 
 public class ClientBridge extends Communicator implements Runnable {
 
@@ -29,10 +31,14 @@ public class ClientBridge extends Communicator implements Runnable {
     public void run() {
         boolean stop = false;
         while (!stop) {
-            Command cmd = read();
-            stop = handleCommand(cmd);
+            LinkedList<Command> cmds = read();
+            while (!cmds.isEmpty()) {
+                Command cmd = cmds.removeFirst();
+                stop = handleCommand(cmd);
+                if (stop) break;
+            }
             for (UiLinker ui : uiLinkers) {
-                cmd = ui.lastPending();
+                Command cmd = ui.lastPending();
                 if (cmd != null) send(cmd);
             }
         }
@@ -46,7 +52,7 @@ public class ClientBridge extends Communicator implements Runnable {
         switch (cmd.type) {
             case ADDPLAYER:
                 if (!inGame) break;
-                String name = cmd.getStr("name");
+                String name = cmd.getStr("nameInGame");
                 boolean isSpec = NetworkUtils.intToBool(cmd.getInt("isSpectator"));
                 for (UiLinker ui : uiLinkers) ui.onPlayerAdded(name, isSpec);
                 lobbyHandler.onPlayerAdded(name, isSpec);
@@ -71,7 +77,9 @@ public class ClientBridge extends Communicator implements Runnable {
                 int spectatorCount = cmd.getInt("spectatorCount");
                 for (UiLinker ui : uiLinkers)
                     ui.onLobbyDataReceived(gameId, gameName, hasPassword, partOfList, maxPlayerCount, spectatorsAllowed, playerCount, spectatorCount);
-                lobbyHandler.onLobbyDataReceived(gameId, gameName, hasPassword, partOfList, maxPlayerCount, spectatorsAllowed, playerCount, spectatorCount);
+                if (inGame && !partOfList) {
+                    lobbyHandler.onLobbyDataReceived(gameId, gameName, hasPassword, partOfList, maxPlayerCount, spectatorsAllowed, playerCount, spectatorCount);
+                }
                 break;
 
             case STARTGAME:
@@ -98,6 +106,8 @@ public class ClientBridge extends Communicator implements Runnable {
                 gameId = cmd.getStr("gameId");
                 lobbyHandler = new GameLobbyHandler();
                 for (UiLinker ui : uiLinkers) ui.onJoinConfirmed(gameId, lobbyHandler);
+                ca = new Command(CmdTypes.SENDALLPLAYERS);
+                send(ca);
                 break;
 
             case PING:
@@ -113,6 +123,20 @@ public class ClientBridge extends Communicator implements Runnable {
 
             case CONNECTIONCONFIRM:
                 for (UiLinker ui : uiLinkers) ui.onConnectionConfirmed();
+                break;
+
+            case ERROR:
+                String reason = cmd.getStr("reason");
+                for (UiLinker ui : uiLinkers) ui.onError(reason);
+                break;
+
+            case REQUESTLOBBYPASSWORD:
+                for (UiLinker ui : uiLinkers) ui.onRequestLobbyPassword();
+                break;
+
+            case RETRY:
+                reason = cmd.getStr("reason");
+                for (UiLinker ui : uiLinkers) ui.onRetry(reason);
                 break;
         }
         return stop;

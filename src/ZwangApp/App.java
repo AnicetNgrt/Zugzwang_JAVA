@@ -7,6 +7,7 @@ import ZwangCore.Classes.Game;
 import ZwangCore.Classes.GameState;
 import ZwangCore.Classes.Rules;
 import ZwangCore.Enums.CardTypes;
+import ZwangGUI.WindowFrame;
 
 import java.util.ArrayList;
 
@@ -16,7 +17,7 @@ public class App {
 		String out;
 		String in;
 		String host = "127.0.0.1";
-		int port = 50257;
+		int port = 0;
 
 		out = "-----ZWANG-----\n";
 		out += "1 - Be a server\n";
@@ -25,14 +26,15 @@ public class App {
 		in = TUI.choiceList(out, "1", "2", "3");
 		switch (in) {
 			case "1":
-				NetworkUtils.startServer(host, port);
+				TUI.println(NetworkUtils.startServer(host, port));
 				break;
 			case "2":
-				NetworkUtils.startClient(host, port);
+				WindowFrame frame = new WindowFrame();
 				break;
 			case "3":
 				port = NetworkUtils.startServer(host, port);
-				NetworkUtils.startClient(host, port);
+				TUI.println(port);
+				frame = new WindowFrame();
 				break;
 		}
 	}

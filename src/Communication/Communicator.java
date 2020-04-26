@@ -2,6 +2,7 @@ package Communication;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.LinkedList;
 
 public class Communicator {
 
@@ -11,22 +12,28 @@ public class Communicator {
         this.sock = sock;
     }
 
-    protected Command read() {
+    protected LinkedList<Command> read() {
+        LinkedList<Command> cmds = new LinkedList<>();
         try {
             InputStream in = sock.getInputStream();
-            ObjectInputStream i = new ObjectInputStream(in);
-            return Command.fromJson(i.readUTF());
+            BufferedReader i = new BufferedReader(new InputStreamReader(in));
+            String line;
+            while (i.ready() && (line = i.readLine()) != null) {
+                Command c = Command.fromJson(line);
+                cmds.add(c);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return null;
+        return cmds;
     }
 
     public void send(Command toSend) {
         try {
             OutputStream out = sock.getOutputStream();
-            ObjectOutputStream o = new ObjectOutputStream(out);
-            o.writeUTF(toSend.toJson());
+            PrintWriter o = new PrintWriter(out, true);
+            String s = toSend.toJson();
+            o.write(s + "\n");
             o.flush();
         } catch (IOException e) {
             e.printStackTrace();

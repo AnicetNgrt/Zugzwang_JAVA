@@ -8,6 +8,7 @@ import Utils.NetworkUtils;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ClientHandler extends Communicator implements Runnable {
@@ -19,11 +20,12 @@ public class ClientHandler extends Communicator implements Runnable {
     private volatile String name = DEFAULT_NAME;
     private volatile boolean inGame = false;
     private volatile String lobbyId = null;
-    private ZGSGameLobby lobbyWaitingForPswd = null;
+    private String lobbyWaitingForPswd = null;
 
     public ClientHandler(Socket pSock, String id) {
         super(pSock);
         this.id = id;
+        remote = (InetSocketAddress) getSock().getRemoteSocketAddress();
     }
 
     public void run() {
@@ -33,14 +35,14 @@ public class ClientHandler extends Communicator implements Runnable {
         send(ca);
 
         while (!getSock().isClosed()) {
-            Command cmd = read();
-            if (cmd == null) break;
-
-            remote = (InetSocketAddress) getSock().getRemoteSocketAddress();
-
-            System.err.println("\n" + debugStr(cmd));
-            boolean stop = handleCommand(cmd);
-
+            boolean stop = false;
+            LinkedList<Command> cmds = read();
+            while (!cmds.isEmpty()) {
+                Command cmd = cmds.removeFirst();
+                if (cmd == null) break;
+                stop = handleCommand(cmd);
+                if (stop) break;
+            }
             if (stop) {
                 closeConnection();
                 break;
@@ -67,7 +69,7 @@ public class ClientHandler extends Communicator implements Runnable {
 
         switch (cmd.type) {
             case DISCONNECT:
-                if (inGame) {
+                if (isInGame(false)) {
                     gl = SharedData.lobbies.get(this.lobbyId);
                     gl.kickPlayer(this.getNameInLobby());
                 }
@@ -76,7 +78,10 @@ public class ClientHandler extends Communicator implements Runnable {
                 break;
 
             case HOST:
-                if (isInGame(false)) sendError("can't host a new game while in a game");
+                if (isInGame(false)) {
+                    sendError("can't host a new game while in a game");
+                    break;
+                }
                 String lobbyId = NetworkUtils.getAlphaNumericString(6);
                 String gameName = cmd.getStr("gameName");
                 int mpc = cmd.getInt("maxPlayerCount");
@@ -88,7 +93,10 @@ public class ClientHandler extends Communicator implements Runnable {
                 break;
 
             case JOIN:
-                if (isInGame(false)) sendError("can't join a game while in a game");
+                if (isInGame(false)) {
+                    sendError("can't join a game while in a game");
+                    break;
+                }
                 lobbyId = cmd.getStr("gameId");
                 final ConcurrentHashMap<String, ZGSGameLobby> lobbies = SharedData.lobbies;
                 if (lobbies.containsKey(lobbyId)) {
@@ -96,7 +104,7 @@ public class ClientHandler extends Communicator implements Runnable {
                     if (lobby.getPassword().length() > 0) {
                         ca = new Command(CmdTypes.REQUESTLOBBYPASSWORD);
                         send(ca);
-                        lobbyWaitingForPswd = lobby;
+                        lobbyWaitingForPswd = lobbyId;
                     } else {
                         boolean canJoin = lobby.addPlayer(this);
                         if (canJoin) {
@@ -111,19 +119,26 @@ public class ClientHandler extends Communicator implements Runnable {
                 break;
 
             case GIVELOBBYPASSWORD:
-                if (isInGame(false)) sendError("can't join a game while in a game");
-                if (lobbyWaitingForPswd == null) break;
+                if (isInGame(false)) {
+                    sendError("can't join a game while in a game");
+                    break;
+                }
+                if (lobbyWaitingForPswd == null) {
+                    sendError("no one asked for a lobby password, did they ?");
+                    break;
+                }
+                ZGSGameLobby lobby = SharedData.lobbies.get(lobbyWaitingForPswd);
                 String password = cmd.getStr("password");
-                if (password.equals(lobbyWaitingForPswd.getPassword())) {
-                    boolean canJoin = lobbyWaitingForPswd.addPlayer(this);
+                if (password.equals(lobby.getPassword())) {
+                    boolean canJoin = lobby.addPlayer(this);
                     if (canJoin) {
-                        setGameAsJoined(lobbyWaitingForPswd.getId());
+                        setGameAsJoined(lobby.getId());
                         lobbyWaitingForPswd = null;
                     } else {
                         sendError("can't join this game");
                     }
                 } else {
-                    sendRetry("wrong password for lobby id: " + lobbyWaitingForPswd.getId());
+                    sendRetry("wrong password for lobby id: " + lobby.getId());
                 }
                 break;
 
@@ -167,6 +182,12 @@ public class ClientHandler extends Communicator implements Runnable {
                 if (!isInGame(true)) break;
                 gl = SharedData.lobbies.get(this.lobbyId);
                 gl.sendData(this, false);
+                break;
+
+            case SENDALLPLAYERS:
+                if (!isInGame(true)) break;
+                gl = SharedData.lobbies.get(this.lobbyId);
+                gl.sendAllPlayers(this);
                 break;
 
             case KICKFROMLOBBY:
@@ -214,7 +235,7 @@ public class ClientHandler extends Communicator implements Runnable {
     }
 
     public String getNameInLobby() {
-        return name + " #" + id;
+        return name + "#" + id;
     }
 
     public void sendRetry(String reason) {
